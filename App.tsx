@@ -1,20 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from 'react-redux';
+import store from './src/redux/store';
+import AppNavigator from './src/app-navigation/navigation-container';
+import { NativeBaseProvider } from "native-base";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
+import { toastConfig } from '@app-components/CustomToast/ToatConfig';
+import { SafeAreaView } from 'react-native';
+import { APIProvider } from 'src/app-context/ContextProvider';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <APIProvider>
+        <NativeBaseProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+              <AppNavigator />
+              <Toast config={toastConfig} />
+          </GestureHandlerRootView>
+        </NativeBaseProvider>
+      </APIProvider>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
