@@ -126,104 +126,92 @@ const styles_c = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D7D7D7',
   },
-  font_text: {
-    fontSize: sizes._12sdp,
-    fontWeight: '400',
-    color: '#5A5A5A',
-  },
   font_text_6_400: {
     fontSize: sizes._6sdp,
     fontWeight: '400',
-    color: '#2D2D2D',
+
   },
   font_text_6_600: {
     fontSize: sizes._6sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#5A5A5A',
+
   },
   font_text_8_400: {
     fontSize: sizes._8sdp,
     fontWeight: '400',
-    color: '#2D2D2D',
+
   },
   font_text_8_600: {
     fontSize: sizes._8sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#2D2D2D',
+
   },
   font_text_10_400: {
     fontSize: sizes._10sdp,
     fontWeight: '400',
-    color: '#5A5A5A',
+
   },
   font_text_10_600: {
     fontSize: sizes._10sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#2D2D2D',
+
   },
   font_text_12_400: {
     fontSize: sizes._12sdp,
     fontWeight: '400',
-    color: '#5A5A5A',
+
   },
   font_text_12_600: {
     fontSize: sizes._12sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#2D2D2D',
+
   },
   font_text_14_400: {
     fontSize: sizes._14sdp,
     fontWeight: '400',
-    color: '#5A5A5A',
+
   },
   font_text_14_600: {
     fontSize: sizes._14sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#2D2D2D',
+
   },
   font_text_16_400: {
     fontSize: sizes._16sdp,
     fontWeight: '400',
-    color: '#5A5A5A',
   },
   font_text_16_600: {
     fontSize: sizes._16sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#2D2D2D',
-    paddingVertical: sizes._6sdp,
   },
   font_text_18_400: {
     fontSize: sizes._18sdp,
     fontWeight: '400',
-    color: '#5A5A5A',
+
   },
   font_text_18_600: {
     fontSize: sizes._18sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#2D2D2D',
-    paddingVertical: sizes._6sdp,
+
   },
   font_text_20_400: {
     fontSize: sizes._20sdp,
     fontWeight: '400',
-    color: '#5A5A5A',
+
   },
   font_text_20_600: {
     fontSize: sizes._20sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#2D2D2D',
-    paddingVertical: sizes._6sdp,
+
   },
   font_text_22_400: {
     fontSize: sizes._22sdp,
     fontWeight: '400',
-    color: '#5A5A5A',
+
   },
   font_text_22_600: {
     fontSize: sizes._22sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
-    color: '#2D2D2D',
-    paddingVertical: sizes._6sdp,
   },
 });
 export default styles_c;

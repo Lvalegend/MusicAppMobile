@@ -5,7 +5,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import sizes from "@assets/styles/sizes";
 import colors from "@assets/colors/global_colors";
-import AntDesign from "expo-vector-icons/build/AntDesign";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import styles_c from "@assets/styles/styles_c";
 import { TouchableOpacity } from "react-native";
 
