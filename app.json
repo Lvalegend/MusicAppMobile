@@ -1,11 +1,20 @@
 {
   "expo": {
-    "name": "MyGraduationProject",
-    "slug": "MyGraduationProject",
+    "name": "Lvalegend Music",
+    "slug": "Lvalegend Music",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/images/icon.png",
+    "icon": "./src/assets/images/logoLvalegend.png",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends.",
+          "cameraPermission": "The app needs access to your camera to take photos."
+        }
+      ]
+    ],
     "splash": {
       "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
@@ -13,13 +22,17 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lvalegend.MyGraduationProject"
+      "bundleIdentifier": "com.lvalegend.MyGraduationProject",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": ["FOREGROUND_SERVICE"],
       "package": "com.lvalegend.MyGraduationProject"
     },
     "web": {

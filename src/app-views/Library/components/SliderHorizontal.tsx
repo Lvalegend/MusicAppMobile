@@ -8,7 +8,6 @@ import styles_c from "@assets/styles/styles_c";
 interface SliderHorizontalProps {
   title: string
   data?: any
-
 }
 const SliderHorizontal: React.FC<SliderHorizontalProps> = ({ title, data }) => {
   return (

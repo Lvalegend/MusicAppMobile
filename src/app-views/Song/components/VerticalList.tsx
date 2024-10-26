@@ -15,7 +15,7 @@ const VerticalList: React.FC<VerticalListProps> = ({ title }) => {
     <Box>
       <Box marginY={'10px'}>
         <Text
-          color={'white'}
+          color={colors.white}
           fontSize={sizes._22sdp}
           fontWeight={'bold'}
         >
@@ -33,7 +33,7 @@ const VerticalList: React.FC<VerticalListProps> = ({ title }) => {
             }}
           />
           <Box>
-            <Text color={'white'}
+            <Text color={colors.text_white}
               fontSize={sizes._16sdp}
               fontWeight={'bold'}
             >
@@ -47,14 +47,14 @@ const VerticalList: React.FC<VerticalListProps> = ({ title }) => {
             <Entypo
               name="add-to-list"
               size={sizes._20sdp}
-              color="black"
+              color={colors.black}
             />
           </TouchableOpacity>
           <TouchableOpacity>
             <SimpleLineIcons
               name="options-vertical"
               size={sizes._20sdp}
-              color="black"
+              color={colors.black}
             />
           </TouchableOpacity>
         </Box>

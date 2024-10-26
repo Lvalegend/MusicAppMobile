@@ -1,10 +1,14 @@
+import URL_API from "@app-helper/urlAPI";
+import { LOGOAPP } from "@app-uikits/image";
 import responsive_screen from "@assets/styles/responsive";
 import sizes from "@assets/styles/sizes";
 import React, { useEffect, useRef } from 'react';
 import { Animated, View, Image, StyleSheet, Platform } from 'react-native';
 
-interface CircleImageRotatingProps { }
-const CircleImageRotating: React.FC<CircleImageRotatingProps> = () => {
+interface CircleImageRotatingProps {
+  image_url: any
+ }
+const CircleImageRotating: React.FC<CircleImageRotatingProps> = ({image_url}) => {
   const spinValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -27,7 +31,7 @@ const CircleImageRotating: React.FC<CircleImageRotatingProps> = () => {
   return (
     <View>
       <Animated.Image
-        source={require('@assets/images/Chúa_tể_an.png')}
+        source={image_url ? {uri: `${URL_API}image/${image_url}`} : LOGOAPP}
         style={[styles.image, { transform: [{ rotate: spin }] }]}
       />
     </View>

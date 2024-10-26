@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { Image } from 'expo-image';
 import { Box, Text } from 'native-base';
@@ -9,6 +9,10 @@ import sizes from '@assets/styles/sizes';
 import styles_c from '@assets/styles/styles_c';
 import colors from '@assets/colors/global_colors';
 import { useNavigationComponentApp } from '@app-helper/navigateToScreens';
+import ModalOptionSong from '@app-views/Modal/ModalOptionSong/ModalOptionSong';
+import { useSelector } from 'react-redux';
+import URL_API from '@app-helper/urlAPI';
+import { LOGOAPP } from '@app-uikits/image';
 
 interface SliderGridProps {
   title: string
@@ -16,14 +20,19 @@ interface SliderGridProps {
 }
 
 const SliderGrid: React.FC<SliderGridProps> = ({ title, data }) => {
-  const {goToSongScreen} = useNavigationComponentApp()
+  const { goToSongScreen } = useNavigationComponentApp()
+  const [isVisibleModalOptionSong, setIsVisibleModalOptionSong] = useState(false)
+  const onCloseModalOptionSong = () => {
+    setIsVisibleModalOptionSong(false)
+  }
+  
 
   const renderItem = (item: any) => (
-    <TouchableWithoutFeedback onPress={goToSongScreen}>
-      <Box style={{ ...styles_c.row_between }} w={'full'} >
+    <TouchableWithoutFeedback onPress={() => goToSongScreen({song_id: item?.song_id})}>
+      <Box style={{ ...styles_c.row_between }} w={'full'} h={sizes._70sdp}>
         <View style={{ ...styles_c.row_center, gap: 10 }}>
           <Image
-            source={item.image}
+            source={item?.song_image ? { uri: `${URL_API}image/${item?.song_image}` } : LOGOAPP}
             style={{
               width: sizes._65sdp,
               height: sizes._65sdp,
@@ -40,7 +49,7 @@ const SliderGrid: React.FC<SliderGridProps> = ({ title, data }) => {
               numberOfLines={2}
               ellipsizeMode='tail'
             >
-              {item.nameSong}
+              {item?.song_name}
             </Text>
             <Text
               fontSize={sizes._14sdp}
@@ -48,20 +57,26 @@ const SliderGrid: React.FC<SliderGridProps> = ({ title, data }) => {
               numberOfLines={1}
               ellipsizeMode='tail'
             >
-              {item.singer}
+              {item?.singer_name}
             </Text>
           </Box>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setIsVisibleModalOptionSong(true)}>
           <SimpleLineIcons name={'options-vertical'} size={sizes._18sdp} color={colors.gray_primary} />
         </TouchableOpacity>
+        <React.Fragment>
+          <ModalOptionSong
+            isVisible={isVisibleModalOptionSong}
+            closeModal={onCloseModalOptionSong}
+          />
+        </React.Fragment>
       </Box>
     </TouchableWithoutFeedback>
   );
 
   const createRows = (data: any[]) => {
     const rows = [];
-    for (let i = 0; i < data.length; i += 3) {
+    for (let i = 0; i < data?.length; i += 3) {
       rows.push(
         <Row key={i} style={styles.row}>
           <Col>

@@ -1,21 +1,23 @@
-import { Box, Text } from "native-base"
-import React, { useState } from "react"
-import Entypo from '@expo/vector-icons/Entypo';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
-import styles_c from "@assets/styles/styles_c";
-import { Dimensions, TouchableOpacity } from "react-native";
-import { useNavigationServices } from "@app-helper/navigateToScreens";
-import ListOptionTab from "./components/ListOptionTab";
-import CircleImageRotating from "./components/CircleImageRotating";
-import { Container, Content } from "@app-layout/Layout";
 import GradientComponent from "@app-components/LinearGradientComponent.tsx/GradientProps";
+import { useNavigationServices } from "@app-helper/navigateToScreens";
+import { Container, Content } from "@app-layout/Layout";
+import ModalOptionSong from "@app-views/Modal/ModalOptionSong/ModalOptionSong";
 import colors from "@assets/colors/global_colors";
 import sizes from "@assets/styles/sizes";
-import ModalOptionSong from "@app-views/Modal/ModalOptionSong/ModalOptionSong";
+import styles_c from "@assets/styles/styles_c";
+import Entypo from '@expo/vector-icons/Entypo';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import { Box, Text } from "native-base";
+import React, { useState } from "react";
+import { TouchableOpacity } from "react-native";
+import ListOptionTab from "./components/ListOptionTab";
+import { useRoute } from "@react-navigation/native";
 
 interface SongScreenProps { }
 const SongScreen: React.FC<SongScreenProps> = () => {
   const { goToBack } = useNavigationServices()
+  const route:any = useRoute()
+  const {song_id, album_id, album_name} = route.params
   const [isVisibleModalOptionSong, setIsVisibleModalOptionSong] = useState(false)
   const onCloseModalOptionSong = () => {
     setIsVisibleModalOptionSong(false)
@@ -37,7 +39,7 @@ const SongScreen: React.FC<SongScreenProps> = () => {
               </TouchableOpacity>
             </Box>
             <Box w={'full'} h={'95%'}>
-              <ListOptionTab />
+              <ListOptionTab song_id={song_id} album_id={album_id} album_name={album_name} />
             </Box>
           </Box>
         </GradientComponent>
@@ -45,6 +47,7 @@ const SongScreen: React.FC<SongScreenProps> = () => {
           <ModalOptionSong
             isVisible={isVisibleModalOptionSong}
             closeModal={onCloseModalOptionSong}
+            showIconComments={true}
           />
         </React.Fragment>
       </Content>

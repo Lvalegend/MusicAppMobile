@@ -14,10 +14,10 @@ const colors = {
   text_blue_primary: '#3498db',
   green_primary: '#41B870',
   text_green_primary: '#41B870',
-  rgba_gray_translucent: 'rgba(124, 124, 124, 0.6)', // Semi-transparent gray
-  rgba_black_translucent: 'rgba(0, 0, 0, 0.7)', // Semi-transparent black
-  rgba_white_translucent: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white
-  rgba_red_translucent: 'rgba(255, 42, 45, 0.5)', // Semi-transparent red
-  rgba_blue_translucent: 'rgba(52, 152, 219, 0.4)' // Semi-transparent blue
+  rgba_gray_translucent: 'rgba(124, 124, 124, 0.6)',
+  rgba_black_translucent: 'rgba(0, 0, 0, 0.7)', 
+  rgba_white_translucent: 'rgba(255, 255, 255, 0.8)',
+  rgba_red_translucent: 'rgba(255, 42, 45, 0.5)',
+  rgba_blue_translucent: 'rgba(52, 152, 219, 0.4)'
 };
 export default colors;

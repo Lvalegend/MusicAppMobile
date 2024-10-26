@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Dimensions, Platform } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text } from "native-base";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
@@ -9,13 +9,15 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import sizes from "@assets/styles/sizes";
 import styles_c from "@assets/styles/styles_c";
 import responsive_screen from "@assets/styles/responsive";
+import URL_API from "@app-helper/urlAPI";
 
-interface MusicPlayerProps { }
+interface MusicPlayerProps {
+  song_url: any
+}
 
-const MusicPlayer: React.FC<MusicPlayerProps> = () => {
-  const [randomMode, setRandomMode] = useState(false)
-
-  const [sound, setSound] = useState<any>(null);
+const MusicPlayer: React.FC<MusicPlayerProps> = ({ song_url }) => {
+  const [randomMode, setRandomMode] = useState(false);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -29,8 +31,18 @@ const MusicPlayer: React.FC<MusicPlayerProps> = () => {
   }, [sound]);
 
   const loadAndPlaySound = async () => {
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      allowsRecordingIOS: false,
+      staysActiveInBackground: true,
+      interruptionModeIOS: 1,
+      interruptionModeAndroid: 2,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+    });
+
     const { sound } = await Audio.Sound.createAsync(
-      require('@assets/musics/3 thằng bạn/3-Thang-Ban-Karik.mp3'),
+      song_url ? { uri: `${URL_API}audio/${song_url}` } : require('@assets/musics/Có hẹn với thanh xuân/co-hen-voi-thanh-xuan-MONSTAR.mp3'),
       { shouldPlay: true }
     );
     setSound(sound);
@@ -73,7 +85,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = () => {
     }
   };
 
-  const seekPosition = async (value: any) => {
+  const seekPosition = async (value: number) => {
     if (sound) {
       await sound.setPositionAsync(value);
       setPosition(value);
@@ -82,7 +94,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = () => {
 
   const formatTime = (milliseconds: number) => {
     const minutes = Math.floor(milliseconds / 60000);
-    const seconds = ((milliseconds % 60000) / 1000).toFixed(0);
+    const seconds: any = ((milliseconds % 60000) / 1000).toFixed(0);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
@@ -143,7 +155,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = () => {
             <AntDesign name="stepforward" size={sizes._35sdp} color={colors.white} />
           </TouchableOpacity>
         </View>
-
       </View>
     </View>
   );

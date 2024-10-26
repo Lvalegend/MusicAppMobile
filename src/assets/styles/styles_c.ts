@@ -213,5 +213,38 @@ const styles_c = StyleSheet.create({
     fontSize: sizes._22sdp,
     fontWeight: Platform.OS == 'ios' ? '600' : '700',
   },
+  font_text_24_400: {
+    fontSize: sizes._24sdp,
+    fontWeight: '400',
+  },
+  font_text_24_600: {
+    fontSize: sizes._24sdp,
+    fontWeight: Platform.OS == 'ios' ? '600' : '700',
+  },
+  font_text_26_400: {
+    fontSize: sizes._26sdp,
+    fontWeight: '400',
+  },
+  font_text_26_600: {
+    fontSize: sizes._26sdp,
+    fontWeight: Platform.OS == 'ios' ? '600' : '700',
+  },
+  font_text_28_400: {
+    fontSize: sizes._28sdp,
+    fontWeight: '400',
+  },
+  font_text_28_600: {
+    fontSize: sizes._28sdp,
+    fontWeight: Platform.OS == 'ios' ? '600' : '700',
+  },
+  font_text_30_400: {
+    fontSize: sizes._30sdp,
+    fontWeight: '400',
+  },
+  font_text_30_600: {
+    fontSize: sizes._30sdp,
+    fontWeight: Platform.OS == 'ios' ? '600' : '700',
+  },
+
 });
 export default styles_c;

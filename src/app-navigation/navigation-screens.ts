@@ -49,4 +49,39 @@ export const ListStackScreens: Record<string, any> = {
     component: require('@app-views/Song/SongScreen')
       .default,
   },
+  AlbumScreen: {
+    name: 'AlbumScreen',
+    component: require('@app-views/Album/AlbumScreen')
+      .default,
+  },
+  ViewAll: {
+    name: 'ViewAll',
+    component: require('@app-views/ViewAll/ViewAll')
+      .default,
+  },
+  GridView: {
+    name: 'GridView',
+    component: require('@app-views/ViewAll/GridView')
+      .default,
+  },
+  ListTitleView: {
+    name: 'ListTitleView',
+    component: require('@app-views/ViewAll/ListTitleView')
+      .default,
+  },
+  EditProfile: {
+    name: 'EditProfile',
+    component: require('@app-views/Personal/EditProfile')
+      .default,
+  },
+  FavouriteScreen: {
+    name: 'FavouriteScreen',
+    component: require('@app-views/Favourite/FavouriteScreen')
+      .default,
+  },
+  SingerScreen: {
+    name: 'SingerScreen',
+    component: require('@app-views/Singer/SingerScreen')
+      .default,
+  },
 }

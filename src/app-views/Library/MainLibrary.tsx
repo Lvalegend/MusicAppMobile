@@ -6,6 +6,7 @@ import sizes from "@assets/styles/sizes"
 import TabBarOption from "./components/TabBarOption"
 import { PlaylistView } from "./components/ViewTabBarOption"
 import SliderHorizontal from "./components/SliderHorizontal"
+import SliderOption from "./components/SliderOption"
 
 interface MainLibraryProps { }
 const MainLibrary: React.FC<MainLibraryProps> = () => {
@@ -24,8 +25,9 @@ const MainLibrary: React.FC<MainLibraryProps> = () => {
     <Container>
       <HeaderApp style={{marginBottom: 5}}  title={"Thư viện"} />
       <Content>
-        <Box marginX={'20px'} style={{gap:15}}>
+        <Box marginX={'20px'} style={{gap:15}} mb={5}>
           <SliderHorizontal title={"Đã nghe gần đây"} data={data1} />
+          <SliderOption/>
           <TabBarOption/>
         </Box>
       </Content>

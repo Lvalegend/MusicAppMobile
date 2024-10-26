@@ -1,12 +1,10 @@
 import HeaderApp from "@app-components/HeaderApp/HeaderApp"
 import { Container, Content } from "@app-layout/Layout"
-import { Box, Text } from "native-base"
-import { View, Image, TouchableOpacity, Platform } from "react-native"
-import PersonInfo from "./components/PersonInfo"
-import SilderHorizontal from "./components/SliderHorizontal"
-import SliderHorizontal from "./components/SliderHorizontal"
-import PersonSetting from "./components/PersonSetting"
+import { Box } from "native-base"
 import { memo } from "react"
+import PersonInfo from "./components/PersonInfo"
+import PersonSetting from "./components/PersonSetting"
+import { default as SilderHorizontal, default as SliderHorizontal } from "./components/SliderHorizontal"
 
 interface MainPersonalProps { }
 const MainPersonal: React.FC<MainPersonalProps> = () => {

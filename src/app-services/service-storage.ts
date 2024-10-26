@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const KEY_STORAGE = {
-  ACCOUNT_DATA: 'ACCOUNT',
+  ACCOUNT_DATA: 'ACCOUNT_DATA',
   USER_TOKEN: 'USER_TOKEN',
 };
-class ServiceStorage {
+class LocalStorage {
   public getString = async (key: string, fallback?: string) => {
     const res = await AsyncStorage.getItem(key);
     try {
@@ -57,5 +57,5 @@ class ServiceStorage {
     return res;
   };
 }
-
-export default new ServiceStorage();
+const ServiceStorage = new LocalStorage()
+export default ServiceStorage;
