@@ -7,31 +7,38 @@ import { Image } from 'expo-image'
 import colors from "@assets/colors/global_colors";
 import Octicons from '@expo/vector-icons/Octicons';
 import { useNavigationComponentApp } from "@app-helper/navigateToScreens";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalOptionSong from "@app-views/Modal/ModalOptionSong/ModalOptionSong";
 import React from "react";
 import URL_API from "@app-helper/urlAPI";
 import { LOGOAPP } from "@app-uikits/image";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getSingerSongData } from "@redux/features/singerSongSlice";
 
 interface SongCardProps {
   item: any
 }
-const SongCard: React.FC<SongCardProps> = ({item}) => {
+const SongCard: React.FC<SongCardProps> = ({ item }) => {
   const { goToSongScreen } = useNavigationComponentApp()
   const [isVisibleModalOptionSong, setIsVisibleModalOptionSong] = useState(false)
   const onCloseModalOptionSong = () => {
     setIsVisibleModalOptionSong(false)
   }
-  const logo = '@assets/images/logoLvalegend.png'
-  const {response} = useSelector((state:any) => state.singerSong)
+  
   return (
     <Box>
-      <TouchableWithoutFeedback onPress={() => goToSongScreen({song_id: item?.song_id, album_id: item?.album_id, album_name: item?.album_name})}>
+      <TouchableWithoutFeedback onPress={() => goToSongScreen(
+        {
+          song_id: item?.song_id,
+          album_id: item?.album_id,
+          album_name: item?.album_name,
+          song_name: item?.song_name,
+          song_url: item?.song_url
+        })}>
         <Box style={{ ...styles_c.row_between }}>
           <Box style={{ ...styles_c.row_direction_align_center, gap: 10 }}>
             <Image
-              source={item?.song_image ? { uri: `${URL_API}/image/${item?.song_image}` } : require(logo)}
+              source={item?.song_image ? { uri: `${URL_API}/image/${item?.song_image}` } : LOGOAPP}
               style={{
                 width: sizes._55sdp,
                 height: sizes._55sdp,
@@ -67,6 +74,8 @@ const SongCard: React.FC<SongCardProps> = ({item}) => {
         <ModalOptionSong
           isVisible={isVisibleModalOptionSong}
           closeModal={onCloseModalOptionSong}
+          song_id={item?.song_id}
+          song_url={item?.song_url}
         />
       </React.Fragment>
     </Box>

@@ -1,6 +1,8 @@
 import HeaderCustom from "@app-components/HeaderCustom/HeaderCustom";
 import { useNavigationServices } from "@app-helper/navigateToScreens";
+import URL_API from "@app-helper/urlAPI";
 import { Container, Content, Footer } from "@app-layout/Layout";
+import ServiceStorage, { KEY_STORAGE } from "@app-services/service-storage";
 import ModalTakePhotos from "@app-views/Modal/ModalTakePhotos/ModalTakePhotos";
 import colors from "@assets/colors/global_colors";
 import sizes from "@assets/styles/sizes";
@@ -14,20 +16,34 @@ import { TextInput } from "react-native-gesture-handler";
 interface EditProfileProps { }
 const EditProfile: React.FC<EditProfileProps> = () => {
   const { goToBack } = useNavigationServices()
-  const [image, setImage] = useState<any>(null)
+  const [isVisibleModalTakePhotos, setIsVisibleModalTakePhotos] = useState(false)
+  const [statusTextInputChange, setStatusTextInputChange] = useState(false)
+  const [statusButtonChange, setStatusButtonChange] = useState(true)
+  let initialImage = null
+  const [userData, setUserData] = useState<any>({})
+  const [nameChange, setNameChange] = useState(userData?.user_name)
+  const [image, setImage] = useState<any>(userData.user_avatar)
+  let initialName = ''
+
   const receiveImage = (image: any) => {
     setImage(image)
   }
 
-  const [isVisibleModalTakePhotos, setIsVisibleModalTakePhotos] = useState(false)
   const closeModalTakePhotos = () => {
     setIsVisibleModalTakePhotos(false)
   }
-  const [statusTextInputChange, setStatusTextInputChange] = useState(false)
-  const [nameChange, setNameChange] = useState('Lê Văn An')
-  const [statusButtonChange, setStatusButtonChange] = useState(true)
-  const initialName = 'Lê Văn An'
-  const initialImage = null
+
+
+  useEffect(() => {
+    (async () => {
+      const data = await ServiceStorage.getObject(KEY_STORAGE.ACCOUNT_DATA);
+      setUserData(data)
+      setNameChange(data?.user_name)
+      setImage(data?.user_avatar)
+      initialName = data?.user_name
+    })();
+  }, []);
+
   useEffect(() => {
     if (image !== initialImage || nameChange !== initialName) {
       setStatusButtonChange(false)
@@ -36,6 +52,20 @@ const EditProfile: React.FC<EditProfileProps> = () => {
       setStatusTextInputChange(true)
     }
   }, [image, nameChange])
+
+
+  console.log('userData', userData)
+
+  const changeRole = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'QUẢN TRỊ VIÊN'
+      case 'normal':
+        return 'THƯỜNG'
+      case 'vip':
+        return 'VIP'
+    }
+  }
 
   return (
     <Container>
@@ -55,37 +85,56 @@ const EditProfile: React.FC<EditProfileProps> = () => {
           </Box>
           <Box style={{ ...styles_c.col_center, marginVertical: 10 }}>
             <Image
-              source={{ uri: image }}
+              source={image ? { uri: image } : { uri: `${URL_API}/image/${userData?.user_avatar}` }}
               style={{
-                width: sizes._120sdp,
-                height: sizes._120sdp,
-                borderRadius: 9999
+                width: sizes._130sdp,
+                height: sizes._130sdp,
+                borderRadius: 9999,
+                borderWidth: 2
               }}
             />
           </Box>
-          <Box style={{ ...styles_c.row_between, marginVertical: 20 }}>
-            <Box style={{ ...styles_c.row_direction_align_center, gap: 20 }}>
-              <Text style={{ ...styles_c.font_text_18_600 }}>Tên: </Text>
-              <TextInput
-                style={{ ...styles_c.font_text_18_600, color: colors.text_gray }}
-                value={nameChange}
-                onChangeText={(text) => setNameChange(text)}
-                editable={statusTextInputChange}
-              />
+          <Box>
+            <Box style={{ ...styles_c.row_between, marginVertical: 20 }}>
+              <Box style={{ ...styles_c.row_direction_align_center, gap: 20 }}>
+                <Text style={{ ...styles_c.font_text_18_600 }}>Tên: </Text>
+                <Text style={{ ...styles_c.font_text_18_600, color: colors.text_gray }}>{userData?.user_name}</Text>
+              </Box>
+              <TouchableOpacity onPress={() => setStatusTextInputChange(true)}>
+                <Text
+                  color={colors.blue_primary}
+                  style={{ ...styles_c.font_text_18_400 }}
+                >
+                  Chỉnh sửa
+                </Text>
+              </TouchableOpacity>
             </Box>
-            <TouchableOpacity onPress={() => setStatusTextInputChange(true)}>
-              <Text
-                color={colors.blue_primary}
-                style={{ ...styles_c.font_text_18_400 }}
-              >
-                Chỉnh sửa
-              </Text>
-            </TouchableOpacity>
+            {statusTextInputChange &&
+              <Box>
+                <TextInput
+                  style={{
+                    ...styles_c.font_text_18_600,
+                    color: colors.text_gray,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    padding: 3,
+                    paddingLeft: 4
+                  }}
+                  value={nameChange}
+                  onChangeText={(text) => setNameChange(text)}
+                />
+              </Box>
+            }
           </Box>
           <Box style={{ ...styles_c.row_between, marginVertical: 10 }}>
             <Box style={{ ...styles_c.row_direction_align_center, gap: 10 }}>
               <Text style={{ ...styles_c.font_text_18_600 }}>Tài khoản: </Text>
-              <Text style={{ ...styles_c.font_text_18_600 }} color={colors.text_gray}>Tài khoản thường</Text>
+              <Text
+                style={{ ...styles_c.font_text_18_600 }}
+                color={colors.text_gray}
+              >
+                {changeRole(userData?.role)}
+              </Text>
             </Box>
             <TouchableOpacity>
               <Text color={colors.text_purple} style={{ ...styles_c.font_text_18_400 }}>Nâng cấp</Text>
@@ -109,7 +158,7 @@ const EditProfile: React.FC<EditProfileProps> = () => {
           }}
           disabled={statusButtonChange}
           onPress={goToBack}
-          >
+        >
           <Text
             color={colors.white}
             style={{ ...styles_c.font_text_16_600 }}

@@ -20,13 +20,16 @@ export const getSingerAlbumData = createAsyncThunk(
 const singerAlbumSlice = createSlice({
   name: 'singerAlbum',
   initialState: {
-    singerResponse: null,
-    albumResponse: null,
-    bothResponse: null,
-    paginationResponse: null,
-    response: null,
+    singerRelationshipNoAlbumResponse: null,
+    albumRelationshipNoSingerResponse: null,
+    bothRelationshipSingerAlbumResponse: null,
+    paginationSingerAlbumResponse: [],
+    paginationSingerOrAlbumResponse: null,
+    paginationSingerAndAlbumResponse: null,
+    singerAlbumResponse: null,
     loading: false,
     error: null,
+    hasMore: true
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -39,20 +42,32 @@ const singerAlbumSlice = createSlice({
         state.loading = false;
 
         const { singer_id, album_id, page, limit } = action.meta.arg || {};
+        const actionChange = { filterSingerId: singer_id || null, filterAlbumId: album_id || null, limit: limit, page: page, ...action.payload }
+        const payloadArray = Array.isArray(actionChange) ? actionChange : [actionChange];
+        if(payloadArray.length < limit){
+          state.hasMore = false;
+        }
+        else {
+          state.hasMore = true;
+        }
 
-        if (singer_id && album_id) {
-          state.bothResponse = state.bothResponse ? [...state.bothResponse, ...action.payload] : action.payload;
-        } else if (singer_id) {
-          state.singerResponse = state.singerResponse ? [...state.singerResponse, ...action.payload] : action.payload;
-        } else if (album_id) {
-          state.albumResponse = state.albumResponse ? [...state.albumResponse, ...action.payload] : action.payload;
-        } else if (page && limit) {
-          state.paginationResponse = state.paginationResponse ? [...state.paginationResponse, ...action.payload] : action.payload;
+        if (singer_id && album_id && page && limit) {
+          state.paginationSingerAndAlbumResponse = state.paginationSingerAndAlbumResponse ? [...state.paginationSingerAndAlbumResponse, ...payloadArray] : payloadArray;
+        } else if (singer_id && album_id && !page && !limit) {
+          state.bothRelationshipSingerAlbumResponse = state.bothRelationshipSingerAlbumResponse ? [...state.bothRelationshipSingerAlbumResponse, ...payloadArray] : payloadArray;
+        } else if (singer_id && !page && !limit) {
+          state.singerRelationshipNoAlbumResponse = state.singerRelationshipNoAlbumResponse ? [...state.singerRelationshipNoAlbumResponse, ...payloadArray] : payloadArray;
+        } else if (album_id && !page && !limit) {
+          state.albumRelationshipNoSingerResponse = state.albumRelationshipNoSingerResponse ? [...state.albumRelationshipNoSingerResponse, ...payloadArray] : payloadArray;
+        } else if (page && limit && !singer_id && !album_id) {
+          state.paginationSingerAlbumResponse = state.paginationSingerAlbumResponse ? [...state.paginationSingerAlbumResponse, ...payloadArray] : payloadArray;
+        } else if ((singer_id || album_id) && (page && limit)) {
+          state.paginationSingerOrAlbumResponse = state.paginationSingerOrAlbumResponse ? [...state.paginationSingerOrAlbumResponse, ...payloadArray] : payloadArray;
         } else {
-          state.response = state.response ? [...state.response, ...action.payload] : action.payload;
+          state.singerAlbumResponse = state.singerAlbumResponse ? [...state.singerAlbumResponse, ...payloadArray] : payloadArray;
         }
       })
-      .addCase(getSingerAlbumData.rejected, (state:any, action) => {
+      .addCase(getSingerAlbumData.rejected, (state: any, action) => {
         state.loading = false;
         state.error = action.payload || 'Error occurred while fetching singer-song data';
       });

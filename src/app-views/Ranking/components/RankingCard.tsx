@@ -11,6 +11,8 @@ import { useNavigationComponentApp } from "@app-helper/navigateToScreens";
 import { useState } from "react";
 import ModalOptionSong from "@app-views/Modal/ModalOptionSong/ModalOptionSong";
 import React from "react";
+import URL_API from "@app-helper/urlAPI";
+import { LOGOAPP } from "@app-uikits/image";
 
 interface RankingCardProps {
   item: any
@@ -27,15 +29,16 @@ const RankingCard: React.FC<RankingCardProps> = ({ item }) => {
         <Box style={{ ...styles_c.row_between }}>
           <Box style={{ ...styles_c.row_direction_align_center, gap: 10 }}>
             <Image
-              source={item.image}
+              source={item.song_image ? { uri: `${URL_API}image/${item.song_image}` } : LOGOAPP}
               style={{
                 width: sizes._55sdp,
                 height: sizes._55sdp,
                 borderRadius: 8
               }}
+              contentFit="cover"
             />
             <Box alignItems={'center'}>
-              <Text color={colors.white}>{item.rank}</Text>
+              <Text color={colors.white}>{1}</Text>
               <Octicons name="dot-fill" size={sizes._12sdp} color={colors.white} />
             </Box>
             <Box>
@@ -43,9 +46,9 @@ const RankingCard: React.FC<RankingCardProps> = ({ item }) => {
                 fontSize={sizes._16sdp}
                 fontWeight={'bold'}
               >
-                {item.nameSong}
+                {item.song_name}
               </Text>
-              <Text color={colors.white_gray}>{item.singer}</Text>
+              <Text color={colors.white_gray}>{item.singer_name}</Text>
             </Box>
           </Box>
           <Box style={{ ...styles_c.row_direction_align_center, gap: 10 }}>

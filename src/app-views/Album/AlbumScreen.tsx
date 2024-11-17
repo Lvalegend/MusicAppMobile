@@ -12,39 +12,53 @@ import ActionComponent from "./components/ActionComponent";
 import ListCircleHorizontal from "./components/ListCircleHorizontal";
 import SongCard from "./components/SongCard";
 import TitleContent from "./components/TitleContent";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import URL_API from "@app-helper/urlAPI";
 import { LOGOAPP } from "@app-uikits/image";
+import { memo, useEffect, useState } from "react";
+import { getSongAlbumData } from "@redux/features/songAlbumSlice";
+import { getSingerAlbumData } from "@redux/features/singerAlbumSlice";
+import { getSingerSongData } from "@redux/features/singerSongSlice";
+import { addAlbumScreenId } from "@redux/features/components/albumScreenSlice";
 
 interface AlbumScreenProps { }
 const AlbumScreen: React.FC<AlbumScreenProps> = () => {
-  const data1 = [
-    { id: 1, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Người Tình Mùa Đông Remix', singer: 'Vĩnh Thuyên Kim' },
-    { id: 2, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Tình Nhòa Remix', singer: 'Rum, KynBB' },
-    { id: 3, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Lên Xe Đi Em Ơi', singer: 'Đinh Kiến Phong' },
-    { id: 4, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Không Bằng Remix', singer: 'Nam Milo' },
-    { id: 5, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Không Bằng Remix', singer: 'Nam Milo' },
-    { id: 6, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Không Bằng Remix', singer: 'Nam Milo' },
-    { id: 7, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Không Bằng Remix', singer: 'Nam Milo' },
-    { id: 8, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Không Bằng Remix', singer: 'Nam Milo' },
-    { id: 9, image: require('@assets/images/Chúa_tể_an.png'), nameSong: 'Hoa Bằng Lăng Remix', singer: 'Rum' },
-  ];
-  const data2 = [
-    { id: 1, image: require('@assets/images/Chúa_tể_an.png'), singer: 'Phạm Việt Thắng', likes: 18000 },
-    { id: 2, image: require('@assets/images/Chúa_tể_an.png'), singer: 'Masew', likes: 217000 },
-    { id: 3, image: require('@assets/images/Chúa_tể_an.png'), singer: 'Đình Bình', likes: 118500 },
-    { id: 4, image: require('@assets/images/Chúa_tể_an.png'), singer: 'Đinh Kiến Phong', likes: 56000 },
-    { id: 5, image: require('@assets/images/Chúa_tể_an.png'), singer: 'Rum', likes: 180001 },
-    { id: 6, image: require('@assets/images/Chúa_tể_an.png'), singer: 'Sơn Tùng', likes: 1850708 },
-  ]
+
   const { goToBack } = useNavigationServices()
   const route: any = useRoute()
-  const logo = '@assets/images/logoLvalegend.png'
-  const { album_id, title, image, singer_id } = route.params
-  console.log('album_id: ' + album_id)
-  const { loading, error, response } = useSelector((state: any) => state.songAlbum);
-  const data = response ? response?.data.filter((item: any) => item?.album_id == album_id) : null
+  const dispatch = useDispatch();
+  const { album_id, title, image } = route.params
+
+  const {albumScreenIds} = useSelector((state:any) => state.albumScreenId)
+  
+  const [checkAlbumId, setCheckAlbumId] = useState(false)
+  useEffect(() => {
+    if(!albumScreenIds?.includes(album_id)){
+      dispatch(addAlbumScreenId(album_id))
+      setCheckAlbumId(true)
+    }
+    else {
+      setCheckAlbumId(false)
+    }
+  },[album_id])
+
+  useEffect(() => {
+    if (checkAlbumId) {
+      console.log('re-render')
+      dispatch(getSongAlbumData({ page: 1, limit: 10, album_id: album_id }))
+    }
+  }, [checkAlbumId])
+
+  const { paginationSongOrAlbumResponse } = useSelector((state: any) => state.songAlbum);
+  console.log('paginationSongOrAlbumResponse', paginationSongOrAlbumResponse)
+  const data = paginationSongOrAlbumResponse
+    ?.filter((item: any) => item.filterAlbumId === album_id)
+    .flatMap((item: any) => item?.data || []);
   const quantity = data ? data?.length : 0
+  console.log('dataaaaaaa', JSON.stringify(data))
+  console.log('album_id', album_id)
+
+
   return (
     <Container>
       <Header>
@@ -67,12 +81,12 @@ const AlbumScreen: React.FC<AlbumScreenProps> = () => {
             />
           </Box>
           <Box marginX={'15px'} mb={4}>
-            <ActionComponent />
+            <ActionComponent data={data}/>
           </Box>
           <Box padding={'15px'} style={{ gap: 10, borderRadius: 15 }}>
             {data?.map((item: any, index: number) => (
               <Box key={index}>
-                <SongCard item={item}/>
+                <SongCard item={item} />
               </Box>
             ))}
             <TouchableOpacity style={{
@@ -87,11 +101,11 @@ const AlbumScreen: React.FC<AlbumScreenProps> = () => {
             </TouchableOpacity>
           </Box>
           <Box marginX={'15px'} mb={4}>
-            <ListCircleHorizontal title="Ca sĩ đóng góp" data={data2} album_id={album_id}/>
+            {/* <ListCircleHorizontal title="Ca sĩ đóng góp" data={paginationSingerOrAlbumResponse} album_id={album_id} /> */}
           </Box>
         </Box>
       </Content>
     </Container>
   )
 }
-export default AlbumScreen
+export default memo(AlbumScreen)

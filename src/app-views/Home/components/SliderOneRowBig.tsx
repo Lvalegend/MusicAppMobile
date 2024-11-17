@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, Box } from "native-base";
 import { View, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { Image } from 'expo-image';
@@ -8,6 +8,9 @@ import { useNavigationComponentApp } from '@app-helper/navigateToScreens';
 import colors from '@assets/colors/global_colors';
 import URL_API from '@app-helper/urlAPI';
 import { LOGOAPP } from '@app-uikits/image';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAlbumData } from '@redux/features/albumSlice';
+import { useNavigation } from '@react-navigation/native';
 
 interface SliderOneRowBigProps {
   title?: string;
@@ -16,7 +19,7 @@ interface SliderOneRowBigProps {
 
 const SliderOneRowBig: React.FC<SliderOneRowBigProps> = ({ title, data }) => {
   const { goToAlbumScreen } = useNavigationComponentApp()
-  const logo = '@assets/images/logoLvalegend.png'
+
   return (
     <Box>
       {title && (

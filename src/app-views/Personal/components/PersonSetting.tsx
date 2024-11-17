@@ -11,7 +11,7 @@ import { TouchableOpacity } from "react-native";
 
 interface PersonSettingProps { }
 const PersonSetting: React.FC<PersonSettingProps> = () => {
-  const {goToLogin} = useNavigationMainApp()
+  const { goToLogin } = useNavigationMainApp()
   const logOut = async () => {
     await ServiceStorage.clearAll()
     await goToLogin()

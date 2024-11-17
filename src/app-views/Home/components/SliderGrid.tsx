@@ -25,10 +25,11 @@ const SliderGrid: React.FC<SliderGridProps> = ({ title, data }) => {
   const onCloseModalOptionSong = () => {
     setIsVisibleModalOptionSong(false)
   }
+  const lastSixElements = data?.slice(-6);
   
 
   const renderItem = (item: any) => (
-    <TouchableWithoutFeedback onPress={() => goToSongScreen({song_id: item?.song_id})}>
+    <TouchableWithoutFeedback onPress={() => goToSongScreen({song_id: item?.song_id, song_name: item?.song_name})}>
       <Box style={{ ...styles_c.row_between }} w={'full'} h={sizes._70sdp}>
         <View style={{ ...styles_c.row_center, gap: 10 }}>
           <Image
@@ -68,6 +69,8 @@ const SliderGrid: React.FC<SliderGridProps> = ({ title, data }) => {
           <ModalOptionSong
             isVisible={isVisibleModalOptionSong}
             closeModal={onCloseModalOptionSong}
+            song_id={item?.song_id}
+            song_url={item?.song_url}
           />
         </React.Fragment>
       </Box>
@@ -113,7 +116,7 @@ const SliderGrid: React.FC<SliderGridProps> = ({ title, data }) => {
       <Box marginY={'10px'}>
         <ScrollView horizontal style={{ width: '100%' }} showsHorizontalScrollIndicator={false}>
           <Grid>
-            {createRows(data)}
+            {createRows(lastSixElements)}
           </Grid>
         </ScrollView>
       </Box>

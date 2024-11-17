@@ -6,6 +6,9 @@ import { Box, Text } from "native-base";
 import { KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Modal } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { createPlaylist } from "@redux/features/playlistSlice";
+import ServiceStorage, { KEY_STORAGE } from "@app-services/service-storage";
 
 interface ModalAddPlaylistProps {
   isVisible: boolean;
@@ -23,11 +26,26 @@ const ModalAddPlaylist: React.FC<ModalAddPlaylistProps> = ({ isVisible, onClose 
     }
   }, [inputText]);
 
+  const [token, setToken] = useState<any>(null)
+  useEffect(() => {
+     (async() => {
+       const token = await ServiceStorage.getString(KEY_STORAGE.USER_TOKEN)
+       setToken(token)
+     })()
+  },[])
+
+  const dispatch = useDispatch()
+  const createNewPlaylist = (token: any, namePlaylist: string) => {
+    if(token){
+      dispatch(createPlaylist({token: token, playlist_name: namePlaylist}))
+    }
+  }
+
   return (
     <Modal visible={isVisible} onRequestClose={onClose} animationType="fade">
       <KeyboardAvoidingView
         style={{ flex: 1, position: "relative" }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        // behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <Box marginY={"15px"} flex={1}>
@@ -72,6 +90,7 @@ const ModalAddPlaylist: React.FC<ModalAddPlaylistProps> = ({ isVisible, onClose 
                   borderRadius: 20,
                 }}
                 disabled={disableButtonAddPlaylist}
+                onPress={async () => { await createNewPlaylist(token, inputText), await onClose()}}
               >
                 <Text color={colors.white} fontWeight={"bold"}>
                   TẠO PLAYLIST

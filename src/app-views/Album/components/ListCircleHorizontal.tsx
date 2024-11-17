@@ -22,13 +22,11 @@ interface ListCircleHorizontalProps {
 }
 
 const ListCircleHorizontal: React.FC<ListCircleHorizontalProps> = ({ title, data, routeData, album_id }) => {
-  const dispatch = useDispatch();
-  const { loading, error, albumResponse } = useSelector((state: any) => state.singerAlbum);
-  useEffect(() => {
-    if(album_id){
-      dispatch(getSingerAlbumData({album_id: album_id}));
-    }
-  }, [dispatch, album_id]);
+  const dataSinger = data
+    ?.filter((item: any) => item.filterAlbumId === album_id)
+    .flatMap((item: any) => item?.data || []);
+    console.log('datassssssssssssinger', dataSinger)
+    console.log("album_iddddddddđ", album_id)
   return (
     <Box>
       <TouchableOpacity>
@@ -47,7 +45,7 @@ const ListCircleHorizontal: React.FC<ListCircleHorizontalProps> = ({ title, data
         style={{ width: '100%', flexDirection: 'row' }}
         showsHorizontalScrollIndicator={false}
       >
-        {albumResponse?.data?.map((item: any, index: number) => (
+        {dataSinger?.map((item: any, index: number) => (
           <TouchableOpacity key={index}>
             <Box w={sizes._150sdp} maxHeight={sizes._220sdp}>
               <Box style={{ width: '100%', height: sizes._150sdp, borderRadius: 99999, overflow: 'hidden' }}>
@@ -61,7 +59,7 @@ const ListCircleHorizontal: React.FC<ListCircleHorizontalProps> = ({ title, data
                 <Text color={colors.text_black}>{item?.singer_name}</Text>
               </Box>
               <Box marginTop={'10px'} style={{...styles_c.col_center}}>
-                <Text color={colors.text_gray}>{item?.total_favourite} quan tâm</Text>
+                <Text color={colors.text_gray}>{item?.total_favourite || 0} quan tâm</Text>
               </Box>
             </Box>
           </TouchableOpacity>

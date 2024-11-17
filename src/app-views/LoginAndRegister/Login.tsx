@@ -20,7 +20,7 @@ const Login: React.FC<LoginProps> = () => {
   const { goToRegister, goToBottomContainer } = useNavigationMainApp()
   const {replaceScreen} = useNavigationServices()
   const dispatch = useDispatch();
-  const { loading, error, response } = useSelector((state: any) => state.login);
+  const { loading, error, loginResponse } = useSelector((state: any) => state.login);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -28,26 +28,26 @@ const Login: React.FC<LoginProps> = () => {
   });
 
   useEffect(() => {
-    if (response?.success === true) {
+    if (loginResponse && loginResponse?.success === true) {
       (async () => {
-        console.log('token', response?.token);
-        await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, response?.token)
+        console.log('token', loginResponse?.token);
+        await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, loginResponse?.token)
         await ServiceStorage.setObject
           (
             KEY_STORAGE.ACCOUNT_DATA,
             {
-              user_name: response?.user_name,
-              user_avatar: response?.user_avatar,
-              role: response?.role,
-              email: response?.email,
-              password: response?.password
+              user_name: loginResponse?.user_name,
+              user_avatar: loginResponse?.user_avatar,
+              role: loginResponse?.role,
+              email: loginResponse?.email,
+              password: loginResponse?.password
             }
           )
           // await goToBottomContainer({screenName: 'Thư viện'})
           await replaceScreen('BottomContainer')
       })()
     }
-  }, [response])
+  }, [loginResponse])
 
 
 

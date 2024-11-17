@@ -13,7 +13,7 @@ export const loginUser:any = createAsyncThunk(
 const loginSlice = createSlice({
   name: 'login',
   initialState: {
-    response: null,
+    loginResponse: null,
     loading: false,
     error: null,
   },
@@ -26,7 +26,7 @@ const loginSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.response = action.payload;
+        state.loginResponse = action.payload;
       })
       .addCase(loginUser.rejected, (state: any, action) => {
         state.loading = false;

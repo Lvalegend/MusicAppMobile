@@ -11,9 +11,9 @@ interface SliderOptionProps { }
 const SliderOption: React.FC<SliderOptionProps> = () => {
   const {goToFavouriteScreen} = useNavigationComponentApp()
   const data = [
-    { id: 1, title: 'Bài hát yêu thích', icon: <MaterialCommunityIcons name="music-clef-treble" size={24} color={colors.blue_primary} />, count: 2 },
-    { id: 2, title: 'Ca sĩ yêu thích', icon: <MaterialCommunityIcons name="account-music" size={24} color={colors.purple} />, count: 1 },
-    { id: 3, title: 'Album yêu thích', icon: <Entypo name="folder-music" size={24} color={colors.red} />, count: 3 },
+    { id: 1, title: 'Bài hát yêu thích', icon: <MaterialCommunityIcons name="music-clef-treble" size={24} color={colors.blue_primary} />, count: 2, type: 'song_favourite' },
+    { id: 2, title: 'Ca sĩ yêu thích', icon: <MaterialCommunityIcons name="account-music" size={24} color={colors.purple} />, count: 1, type: 'singer_favourite' },
+    { id: 3, title: 'Album yêu thích', icon: <Entypo name="folder-music" size={24} color={colors.red} />, count: 3, type: 'album_favourite' },
   ]
   return (
     <Box>
@@ -31,7 +31,7 @@ const SliderOption: React.FC<SliderOptionProps> = () => {
               borderRadius: 8,
               width: sizes._135sdp
             }} 
-            onPress={() => goToFavouriteScreen({title: item.title})}>
+            onPress={() => goToFavouriteScreen({title: item.title, type: item.type})}>
             <Box style={{ gap: 5 }}>
               <Box>{item.icon}</Box>
               <Box>

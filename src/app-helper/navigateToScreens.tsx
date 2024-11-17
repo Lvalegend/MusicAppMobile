@@ -73,6 +73,12 @@ export const useNavigationComponentApp = () => {
   const goToViewAll = useOnEventCallback((route?: any) => {
     goToScreen('ViewAll', route);
   });
+  const goToViewPlaylist = useOnEventCallback((route?: any) => {
+    goToScreen('ViewPlaylist', route);
+  });
+  const goToViewAccountPackage = useOnEventCallback((route?: any) => {
+    goToScreen('ViewAccountPackage', route);
+  });
   const goToGridView = useOnEventCallback((route?: any) => {
     goToScreen('GridView', route);
   });
@@ -88,6 +94,9 @@ export const useNavigationComponentApp = () => {
   const goToSingerScreen = useOnEventCallback((route?: any) => {
     goToScreen('SingerScreen', route);
   });
+  const goToSpeechToText = useOnEventCallback((route?: any) => {
+    goToScreen('SpeechToText', route);
+  });
 
   return {
     goToSongScreen,
@@ -97,7 +106,10 @@ export const useNavigationComponentApp = () => {
     goToListTitleView,
     goToEditProfile,
     goToFavouriteScreen,
-    goToSingerScreen
+    goToSingerScreen,
+    goToViewPlaylist,
+    goToViewAccountPackage,
+    goToSpeechToText
   };
 };
 

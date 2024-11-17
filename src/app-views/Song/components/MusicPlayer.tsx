@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Text } from "native-base";
+import { Box, Text } from "native-base";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import colors from "@assets/colors/global_colors";
@@ -10,17 +10,31 @@ import sizes from "@assets/styles/sizes";
 import styles_c from "@assets/styles/styles_c";
 import responsive_screen from "@assets/styles/responsive";
 import URL_API from "@app-helper/urlAPI";
+import { useDispatch, useSelector } from "react-redux";
+import { updateSongView } from "@redux/features/songSlice";
 
 interface MusicPlayerProps {
-  song_url: any
 }
 
-const MusicPlayer: React.FC<MusicPlayerProps> = ({ song_url }) => {
+const MusicPlayer: React.FC<MusicPlayerProps> = () => {
+  const { listOptionTabDataCurrent } = useSelector((state: any) => state.songScreen)
   const [randomMode, setRandomMode] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [heard, setHeard] = useState(true);
+  const dispatch = useDispatch()
+
+  console.log('song_iddddd', listOptionTabDataCurrent[0]?.data[0]?.song_id)
+
+  const onPressListener = async () => {
+    if (heard && listOptionTabDataCurrent[0]?.data[0]?.song_id) {
+      setHeard(false)
+      console.log('re-render')
+      await dispatch(updateSongView(listOptionTabDataCurrent[0]?.data[0]?.song_id))
+    }
+  }
 
   useEffect(() => {
     return sound
@@ -42,7 +56,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ song_url }) => {
     });
 
     const { sound } = await Audio.Sound.createAsync(
-      song_url ? { uri: `${URL_API}audio/${song_url}` } : require('@assets/musics/Có hẹn với thanh xuân/co-hen-voi-thanh-xuan-MONSTAR.mp3'),
+      listOptionTabDataCurrent[0]?.data[0]?.song_url ? { uri: `${URL_API}audio/${listOptionTabDataCurrent[0]?.data[0]?.song_url}` } : require('@assets/musics/Có hẹn với thanh xuân/co-hen-voi-thanh-xuan-MONSTAR.mp3'),
       { shouldPlay: true }
     );
     setSound(sound);
@@ -147,7 +161,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ song_url }) => {
               <AntDesign name="pausecircleo" size={sizes._65sdp} color={colors.white} />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={playSound} style={styles.button}>
+            <TouchableOpacity onPress={() => { playSound(), onPressListener() }} style={styles.button}>
               <AntDesign name="playcircleo" size={sizes._65sdp} color={colors.white} />
             </TouchableOpacity>
           )}

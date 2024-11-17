@@ -15,18 +15,16 @@ import { LOGOAPP } from "@app-uikits/image";
 interface SliderOneRowSmallProps {
   title: string;
   data: any;
-  routeData: any
+  sizeTitle?: number
 }
-
-const SliderOneRowSmall: React.FC<SliderOneRowSmallProps> = ({ title, data, routeData }) => {
+const SliderOneRowSmall: React.FC<SliderOneRowSmallProps> = ({ title, data, sizeTitle = sizes._26sdp }) => {
   const { goToGridView, goToAlbumScreen } = useNavigationComponentApp()
-  const { loading, error, paginationResponse } = useSelector((state: any) => state.singerAlbum);
-  const displayData = paginationResponse?.data?.slice(0,4)
+  const displayData = data?.slice(0,4)
   return (
     <Box>
-      <TouchableOpacity onPress={() => goToGridView({title: title, data: paginationResponse?.data})}>
+      <TouchableOpacity onPress={() => goToGridView({title: title, data: displayData})}>
         <Box style={{ ...styles_c.row_direction_align_center, gap: 10, marginBottom: 10 }}>
-          <Text fontSize={sizes._26sdp} color={'black'} fontWeight={'bold'}>{title}</Text>
+          <Text fontSize={sizeTitle} color={'black'} fontWeight={'bold'}>{title}</Text>
           <Entypo
             name={'chevron-thin-right'}
             size={sizes._18sdp}
@@ -72,7 +70,7 @@ const SliderOneRowSmall: React.FC<SliderOneRowSmallProps> = ({ title, data, rout
             alignSelf: 'center',
             padding: 10
           }}
-          onPress={() => goToGridView({title: title, data: paginationResponse?.data})}
+          onPress={() => goToGridView({title: title, data: displayData})}
         >
           <Box justifyContent={'center'} alignItems={'center'} style={{ gap: 10 }}>
             <Feather name="arrow-right-circle" size={sizes._30sdp} color={'black'} />

@@ -9,6 +9,7 @@ const colors = {
   text_red: '#FF2A2D',
   purple: '#9C00DF',
   text_purple: '#9C00DF',
+  white_purple: '#F0E8FD',
   white_gray: '#D4D4D4',
   blue_primary: '#3498db',
   text_blue_primary: '#3498db',
@@ -18,6 +19,7 @@ const colors = {
   rgba_black_translucent: 'rgba(0, 0, 0, 0.7)', 
   rgba_white_translucent: 'rgba(255, 255, 255, 0.8)',
   rgba_red_translucent: 'rgba(255, 42, 45, 0.5)',
-  rgba_blue_translucent: 'rgba(52, 152, 219, 0.4)'
+  rgba_blue_translucent: 'rgba(52, 152, 219, 0.4)',
+  rgba_purple_translucent: 'rgba(156, 0, 223, 0.7)'
 };
 export default colors;

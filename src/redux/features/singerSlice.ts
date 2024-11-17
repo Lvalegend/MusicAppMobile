@@ -13,8 +13,10 @@ export const getSingerData = createAsyncThunk(
 const singerSlice = createSlice({
   name: 'singer',
   initialState: {
-    response: null,
-    filterResponse: null,
+    singerResponse: null,
+    filterSingerResponse: null,
+    paginationSingerResponse: null,
+    filterPaginationSingerResponse: null,
     loading: false,
     error: null,
   },
@@ -27,12 +29,18 @@ const singerSlice = createSlice({
       })
       .addCase(getSingerData.fulfilled, (state, action) => {
         state.loading = false;
-        const { filterColumn, filterValue} = action.meta.arg || {};
+        const { filterColumn, filterValue, page, limit} = action.meta.arg || {};
+        const actionChange = {filterValue: filterValue, filterColumn: filterColumn, limit: limit, page: page, ...action.payload }
+        const payloadArray = Array.isArray(actionChange) ? actionChange : [actionChange];
 
-        if (filterColumn && filterValue) {
-          state.filterResponse = action.payload;
+        if (filterColumn && filterValue && page && limit) {
+          state.filterPaginationSingerResponse = state.filterPaginationSingerResponse ? [...state.filterPaginationSingerResponse, ...payloadArray] : payloadArray;;
+        } else if (filterColumn && filterValue && !page && !limit) {
+          state.filterSingerResponse = state.filterSingerResponse ? [...state.filterSingerResponse, ...payloadArray] : payloadArray;;
+        } else if (page && limit &&!filterColumn &&!filterValue) {
+          state.paginationSingerResponse = state.paginationSingerResponse ? [...state.paginationSingerResponse, ...payloadArray] : payloadArray;
         } else {
-          state.response = action.payload;
+          state.singerResponse = state.singerResponse ? [...state.singerResponse, ...payloadArray] : payloadArray;
         }
       })
       .addCase(getSingerData.rejected, (state: any, action) => {

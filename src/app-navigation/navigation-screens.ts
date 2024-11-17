@@ -1,3 +1,4 @@
+
 export const ListStackScreens: Record<string, any> = {
   MainHome: {
     name: 'MainHome',
@@ -59,6 +60,16 @@ export const ListStackScreens: Record<string, any> = {
     component: require('@app-views/ViewAll/ViewAll')
       .default,
   },
+  ViewAccountPackage: {
+    name: 'ViewAccountPackage',
+    component: require('@app-views/ViewAll/ViewAccountPackage')
+      .default,
+  },
+  ViewPlaylist: {
+    name: 'ViewPlaylist',
+    component: require('@app-views/ViewAll/ViewPlaylist')
+      .default,
+  },
   GridView: {
     name: 'GridView',
     component: require('@app-views/ViewAll/GridView')
@@ -82,6 +93,11 @@ export const ListStackScreens: Record<string, any> = {
   SingerScreen: {
     name: 'SingerScreen',
     component: require('@app-views/Singer/SingerScreen')
+      .default,
+  },
+  SpeechToText: {
+    name: 'SpeechToText',
+    component: require('@app-views/Voice/SpeechToText')
       .default,
   },
 }

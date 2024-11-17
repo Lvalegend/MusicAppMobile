@@ -4,10 +4,15 @@ import { Box } from "native-base"
 import { memo } from "react"
 import PersonInfo from "./components/PersonInfo"
 import PersonSetting from "./components/PersonSetting"
-import { default as SilderHorizontal, default as SliderHorizontal } from "./components/SliderHorizontal"
+import SliderHorizontal from "./components/SliderHorizontal"
+import { useSelector } from "react-redux"
+import AccountPackage from "../ViewAll/components/AccountPackage"
+
 
 interface MainPersonalProps { }
 const MainPersonal: React.FC<MainPersonalProps> = () => {
+  const {allPlaylistData} = useSelector((state:any) => state.playlist )
+  const combineAllPlaylistData = allPlaylistData ? allPlaylistData?.flatMap(obj => obj?.data) : []
   const data1 = [
     { id: 1, image: require('@assets/images/Chúa_tể_an.png'), namePlaylist: 'Người Tình Mùa Đông Remix' },
     { id: 2, image: require('@assets/images/Chúa_tể_an.png'), namePlaylist: 'Tình Nhòa Remix' },
@@ -36,8 +41,9 @@ const MainPersonal: React.FC<MainPersonalProps> = () => {
       <Content>
         <Box marginX={'20px'} style={{ gap: 15 }} marginBottom={'20px'}>
           <PersonInfo />
-          <SilderHorizontal data={data1} title={"Danh sách phát của tôi"} />
+          <SliderHorizontal data={combineAllPlaylistData} title={"Danh sách phát của tôi"} />
           <SliderHorizontal data={data2} title={"Có thể bạn muốn nghe"} />
+          <AccountPackage/>
           <PersonSetting />
         </Box>
       </Content>

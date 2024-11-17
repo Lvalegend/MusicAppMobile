@@ -18,7 +18,7 @@ interface RegisterProps { }
 const Register: React.FC<RegisterProps> = () => {
   const {goToLogin} = useNavigationMainApp()
   const dispatch = useDispatch();
-  const { loading, error, response } = useSelector((state: any) => state.register);
+  const { loading, error, registerResponse } = useSelector((state: any) => state.register);
   
   const [formData, setFormData] = useState({
     user_name: '',
@@ -27,22 +27,22 @@ const Register: React.FC<RegisterProps> = () => {
   });
 
   useEffect(() => {
-    if (response?.success === true) {
+    if (registerResponse && registerResponse?.success === true) {
       (async () => {
-        console.log('token', response?.token);
-        await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, response?.token)
+        console.log('token', registerResponse?.token);
+        await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, registerResponse?.token)
         await ServiceStorage.setObject
           (
             KEY_STORAGE.ACCOUNT_DATA,
             {
-              user_name: response?.user_name,
-              user_avatar: response?.user_avatar,
-              role: response?.role
+              user_name: registerResponse?.user_name,
+              user_avatar: registerResponse?.user_avatar,
+              role: registerResponse?.role
             }
           )
       })()
     }
-  }, [response])
+  }, [registerResponse])
 
   const handleTextChange = (name: string, value: any) => {
     setFormData((prev) => ({ ...prev, [name]: value }));

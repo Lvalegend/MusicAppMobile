@@ -6,6 +6,7 @@ import sizes from '@assets/styles/sizes';
 import ServiceStorage, { KEY_STORAGE } from '@app-services/service-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '@redux/features/loginSlice';
+import { getListPlaylistOfUser } from '@redux/features/playlistSlice';
 
 interface SplashProps { }
 
@@ -13,7 +14,7 @@ const Splash: React.FC<SplashProps> = () => {
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
 
-  const { loading, error, response } = useSelector((state: any) => state.login);
+  const { loading, error, loginResponse } = useSelector((state: any) => state.login);
 
   const getTokenData = async () => {
     const userData = await ServiceStorage.getObject(KEY_STORAGE.ACCOUNT_DATA);
@@ -34,10 +35,12 @@ const Splash: React.FC<SplashProps> = () => {
     getTokenData();
   }, []);
 
+
   useEffect(() => {
-    if (response?.token) {
+    if (loginResponse?.token) {
       (async() => {
-        await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, response?.token)
+        await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, loginResponse?.token)
+        await dispatch(getListPlaylistOfUser({ token: loginResponse?.token }))
         await navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -53,7 +56,7 @@ const Splash: React.FC<SplashProps> = () => {
         })
       );
     }
-  }, [response?.token, error, navigation]);
+  }, [loginResponse?.token, error, navigation]);
 
   return (
     <Box justifyContent={'center'} alignItems={'center'} flex={1} position={'relative'}>

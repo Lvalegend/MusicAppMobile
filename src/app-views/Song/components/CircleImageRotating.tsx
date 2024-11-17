@@ -4,11 +4,13 @@ import responsive_screen from "@assets/styles/responsive";
 import sizes from "@assets/styles/sizes";
 import React, { useEffect, useRef } from 'react';
 import { Animated, View, Image, StyleSheet, Platform } from 'react-native';
+import { useSelector } from "react-redux";
 
 interface CircleImageRotatingProps {
-  image_url: any
+  
  }
-const CircleImageRotating: React.FC<CircleImageRotatingProps> = ({image_url}) => {
+const CircleImageRotating: React.FC<CircleImageRotatingProps> = () => {
+  const {listOptionTabDataCurrent}= useSelector((state:any) => state.songScreen)
   const spinValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const CircleImageRotating: React.FC<CircleImageRotatingProps> = ({image_url}) =>
   return (
     <View>
       <Animated.Image
-        source={image_url ? {uri: `${URL_API}image/${image_url}`} : LOGOAPP}
+        source={listOptionTabDataCurrent[0]?.data[0]?.song_image ? {uri: `${URL_API}image/${listOptionTabDataCurrent[0]?.data[0]?.song_image}`} : LOGOAPP}
         style={[styles.image, { transform: [{ rotate: spin }] }]}
       />
     </View>
