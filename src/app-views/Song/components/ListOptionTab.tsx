@@ -1,4 +1,4 @@
-import React, { Fragment, memo, useEffect, useState } from 'react';
+import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { Box, Text, Pressable } from 'native-base';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import { Dimensions, Platform, StyleSheet, TouchableOpacity } from 'react-native';
@@ -21,13 +21,14 @@ import ModalSelectPlaylist from '@app-views/Modal/ModalActionPlaylist/ModalSelec
 import DownloadMusic from './DownloadMusic';
 import { addFavouriteSongForUser, deleteFavouriteSongForUser, getUserSongData, removeSongById } from '@redux/features/userSongSlice';
 import ServiceStorage, { KEY_STORAGE } from '@app-services/service-storage';
+import { setListCheckFavourite } from '@redux/features/components/songScreenSlice';
 
 export type Props = {
   song_id?: number
   album_id?: number,
   album_name?: string,
   song_name?: string
-  data: any[]
+  data?: any[]
 }
 
 const TabBarCustom = ({ navigationState, jumpTo }: any) => {
@@ -58,11 +59,10 @@ const TabBarCustom = ({ navigationState, jumpTo }: any) => {
 
 
 const FirstRoute = memo(() => {
-  const {listOptionTabDataCurrent}= useSelector((state:any) => state.songScreen)
   return (
     <Box flex={1} mx={'20px'}>
       <Box w={'full'}>
-        <InfoCard item={listOptionTabDataCurrent[0]?.data} album_name={listOptionTabDataCurrent[0]?.album_name} />
+        <InfoCard />
       </Box>
       <Box>
         <VerticalList title='Có thể bạn muốn nghe' />
@@ -72,9 +72,12 @@ const FirstRoute = memo(() => {
 });
 
 const SecondRoute = memo(() => {
-  const {listOptionTabDataCurrent}= useSelector((state:any) => state.songScreen)
+  const { listOptionTabDataCurrent, listCheckFavourite } = useSelector((state: any) => state.songScreen)
+  const { paginationUserAndSongResponse } = useSelector((state: any) => state.userSong)
+  console.log('paginationUserAndSongResponseeee', JSON.stringify(paginationUserAndSongResponse))
+  console.log('listOptionTabDataCurrent', JSON.stringify(listOptionTabDataCurrent))
+  const { token } = useSelector((state: any) => state.authToken)
   const [favourite, setFavourite] = useState(false)
-  const [token, setToken] = useState<string>()
   const [isVisibleModalChat, setIsVisibleModalChat] = useState(false)
   const onCloseModalChat = () => {
     setIsVisibleModalChat(false)
@@ -84,28 +87,95 @@ const SecondRoute = memo(() => {
     setIsVisibleModalSelectPlaylist(false)
   }
   const [loop, setLoop] = useState(false)
+  const allSingerNames = listOptionTabDataCurrent[0]?.data ?
+    listOptionTabDataCurrent[0]?.data
+      .flatMap(song => song?.singers?.map(singer => singer?.singer_name))
+      .join(", ") : ''
+
   const dispatch = useDispatch()
-  
+
+  const currentSongId = listOptionTabDataCurrent?.[0]?.data?.[0]?.song_id;
+
+  const existingFavourite = useMemo(() => {
+    return listCheckFavourite?.find(item => item?.song_id === currentSongId);
+  }, [listCheckFavourite, currentSongId]);
+
+  // Xử lý khi trạng thái bài hát thay đổi hoặc lần đầu vào bài hát
+  useEffect(() => {
+    if (currentSongId) {
+      if (existingFavourite) {
+        // Nếu đã có trong `listCheckFavourite`, set trạng thái yêu thích từ Redux
+        setFavourite(existingFavourite.is_favourite);
+      } else {
+        // Nếu chưa có trong `listCheckFavourite`, kiểm tra `paginationUserAndSongResponse`
+        const songData = paginationUserAndSongResponse?.find(
+          item => item?.filterSongId === currentSongId
+        );
+
+        if (songData) {
+          const isFavourite = songData?.data?.length > 0; // Kiểm tra nếu `data` không rỗng
+          setFavourite(isFavourite);
+
+          // Thêm dữ liệu mới vào Redux
+          dispatch(setListCheckFavourite({ song_id: currentSongId, is_favourite: isFavourite }));
+        } else {
+          // Nếu không tìm thấy dữ liệu, gọi API để cập nhật `paginationUserAndSongResponse`
+          dispatch(getUserSongData({ page: 1, limit: 1, song_id: currentSongId, token: token }));
+        }
+      }
+    }
+  }, [currentSongId, existingFavourite, paginationUserAndSongResponse]);
+  console.log('favourite', favourite)
+
+  // Hàm xử lý khi người dùng bấm yêu thích hoặc bỏ yêu thích
+  const onPressFavouriteSong = () => {
+    if (token && currentSongId) {
+      if (!favourite) {
+        // Thêm yêu thích
+        dispatch(addFavouriteSongForUser({ token: token, song_id: currentSongId }));
+        dispatch(setListCheckFavourite({ song_id: currentSongId, is_favourite: true }));
+        setFavourite(true);
+      } else {
+        // Bỏ yêu thích
+        dispatch(deleteFavouriteSongForUser({ token: token, song_id: currentSongId }));
+        dispatch(setListCheckFavourite({ song_id: currentSongId, is_favourite: false }));
+        setFavourite(false);
+      }
+    }
+  };
+
   return (
     <Box flex={1} mx={'20px'}>
-      <Box flex={3} justifyContent={'center'} alignItems={'center'}>
-        <CircleImageRotating/>
+      <Box flex={3} style={{ ...styles_c.col_center }}>
+        <CircleImageRotating />
       </Box>
-      <Box flex={1} justifyContent={'center'} alignItems={'center'}>
+      <Box flex={1} style={{ ...styles_c.col_center }}>
         <Box style={{ ...styles_c.row_between, width: '100%' }} flex={1}>
           <TouchableOpacity onPress={() => setLoop(!loop)}>
             <MaterialIcons name="loop" size={sizes._26sdp} color={loop === true ? colors.blue_primary : colors.white} />
           </TouchableOpacity>
           <Box style={{ alignItems: 'center', gap: 10, marginVertical: 10 }}>
-            <Text fontSize={sizes._20sdp} fontWeight={'600'} color={colors.white}>{listOptionTabDataCurrent[0]?.song_name}</Text>
-            <Text color={colors.text_gray} fontSize={sizes._12sdp}>{listOptionTabDataCurrent[0]?.singer_name}</Text>
+            <Box maxWidth={sizes._300sdp}>
+              <Text
+                fontSize={sizes._20sdp}
+                fontWeight={'600'}
+                color={colors.white}
+                flexWrap={'wrap'}
+                textAlign={'center'}
+                ellipsizeMode='tail'
+                numberOfLines={2}
+              >
+                {listOptionTabDataCurrent[0]?.data[0]?.song_name}
+              </Text>
+            </Box>
+            <Text color={colors.text_gray} fontSize={sizes._12sdp}>{allSingerNames}</Text>
           </Box>
-          <TouchableOpacity onPress={() => { setFavourite(!favourite)}}>
+          <TouchableOpacity onPress={() => { onPressFavouriteSong() }}>
             <AntDesign name="hearto" size={sizes._24sdp} color={favourite === true ? colors.blue_primary : colors.white} />
           </TouchableOpacity>
         </Box>
       </Box>
-      <Box flex={1} justifyContent={'center'} alignItems={'center'} mt={'10px'}>
+      <Box flex={1} style={{ ...styles_c.col_center }} mt={'10px'}>
         <MusicPlayer />
       </Box>
       <Box
@@ -156,7 +226,7 @@ const ThirdRoute = () => {
 }
 
 export interface ListOptionTabProps {
-  
+
 }
 const ListOptionTab: React.FC<ListOptionTabProps> = () => {
   const [index, setIndex] = React.useState(1);
@@ -167,24 +237,9 @@ const ListOptionTab: React.FC<ListOptionTabProps> = () => {
 
   ]);
 
-  // const { paginationSingerOrSongResponse } = useSelector((state: any) => state.singerSong)
-  // const data = paginationSingerOrSongResponse ?
-  //   paginationSingerOrSongResponse
-  //     .map(response => response?.data?.filter(
-  //       song => song?.song_id === song_id && song?.song_name === song_name
-  //     )).flat() : []
-
-  // const props: Props = {
-  //   song_id: song_id,
-  //   album_id: album_id,
-  //   album_name: album_name,
-  //   song_name: song_name,
-  //   data: data
-  // }
-
   const renderScene = SceneMap({
-    first: () => <FirstRoute/>,
-    second: () => <SecondRoute/>,
+    first: () => <FirstRoute />,
+    second: () => <SecondRoute />,
     third: ThirdRoute
   });
 

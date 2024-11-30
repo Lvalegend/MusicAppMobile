@@ -2,7 +2,7 @@ import URL_API from "@app-helper/urlAPI";
 import { LOGOAPP } from "@app-uikits/image";
 import responsive_screen from "@assets/styles/responsive";
 import sizes from "@assets/styles/sizes";
-import React, { useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { Animated, View, Image, StyleSheet, Platform } from 'react-native';
 import { useSelector } from "react-redux";
 
@@ -47,4 +47,4 @@ const styles = StyleSheet.create({
     resizeMode: 'cover'
   },
 });
-export default CircleImageRotating
+export default memo(CircleImageRotating)

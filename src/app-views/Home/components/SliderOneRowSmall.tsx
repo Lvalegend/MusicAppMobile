@@ -8,21 +8,23 @@ import sizes from "@assets/styles/sizes";
 import styles_c from "@assets/styles/styles_c";
 import colors from "@assets/colors/global_colors";
 import { useNavigationComponentApp } from "@app-helper/navigateToScreens";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import URL_API from "@app-helper/urlAPI";
 import { LOGOAPP } from "@app-uikits/image";
 
 interface SliderOneRowSmallProps {
   title: string;
   data: any;
-  sizeTitle?: number
+  sizeTitle?: number,
+  singer_id?: number;
+  type: 'random_album' | 'album_of_singer'
 }
-const SliderOneRowSmall: React.FC<SliderOneRowSmallProps> = ({ title, data, sizeTitle = sizes._26sdp }) => {
+const SliderOneRowSmall: React.FC<SliderOneRowSmallProps> = ({ title, data, sizeTitle = sizes._26sdp, type ,singer_id }) => {
   const { goToGridView, goToAlbumScreen } = useNavigationComponentApp()
   const displayData = data?.slice(0,4)
   return (
     <Box>
-      <TouchableOpacity onPress={() => goToGridView({title: title, data: displayData})}>
+      <TouchableOpacity onPress={() => goToGridView({title: title, type: type, singer_id: singer_id})}>
         <Box style={{ ...styles_c.row_direction_align_center, gap: 10, marginBottom: 10 }}>
           <Text fontSize={sizeTitle} color={'black'} fontWeight={'bold'}>{title}</Text>
           <Entypo
@@ -70,7 +72,7 @@ const SliderOneRowSmall: React.FC<SliderOneRowSmallProps> = ({ title, data, size
             alignSelf: 'center',
             padding: 10
           }}
-          onPress={() => goToGridView({title: title, data: displayData})}
+          onPress={() => goToGridView({title: title, type: type, singer_id: singer_id})}
         >
           <Box justifyContent={'center'} alignItems={'center'} style={{ gap: 10 }}>
             <Feather name="arrow-right-circle" size={sizes._30sdp} color={'black'} />

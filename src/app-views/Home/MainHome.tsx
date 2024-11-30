@@ -20,9 +20,9 @@ const MainHome: React.FC<MainHomeProps> = () => {
   const { paginationSingerAlbumResponse } = useSelector((state: any) => state.singerAlbum)
   useEffect(() => {
     (async () => {
-      await dispatch(getAlbumData({ page: 1, limit: 5, filterColumn: 'status', filterValue: 'hot' }))
+      dispatch(getAlbumData({ page: 1, limit: 5, filterColumn: 'status', filterValue: 'hot' }))
       // await dispatch(getSingerSongData({ page: 1, limit: 6 }))
-      await dispatch(getSingerAlbumData({ page: 1, limit: 6 }))
+      dispatch(getSingerAlbumData({ page: 1, limit: 8 }))
     })()
   }, [dispatch])
 
@@ -43,7 +43,11 @@ const MainHome: React.FC<MainHomeProps> = () => {
           <SliderGrid data={combinedDataSingerSong} title={"Gợi ý cho bạn"} />
           {/* <SliderBox title={"Chủ đề & thể loại"} data={data1} routeData={routeData2} /> */}
           <Box marginY={5}>
-            <SliderOneRowSmall title={"Có thể bạn muốn nghe"} data={combinedDataSingerAlbum} />
+            <SliderOneRowSmall
+              title={"Có thể bạn muốn nghe"}
+              data={combinedDataSingerAlbum}
+              type="random_album"
+            />
           </Box>
         </Box>
       </Content>

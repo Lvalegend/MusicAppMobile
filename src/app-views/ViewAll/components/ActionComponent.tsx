@@ -1,6 +1,7 @@
 import { Box, Text } from "native-base"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { TouchableOpacity } from "react-native";
 import sizes from "@assets/styles/sizes";
 import styles_c from "@assets/styles/styles_c";
@@ -25,12 +26,12 @@ const ActionComponent: React.FC<ActionComponentProps> = () => {
       </TouchableOpacity>
       <TouchableOpacity>
         <Box alignItems={'center'}>
-          <MaterialIcons
-            name="favorite-outline"
-            size={sizes._27sdp}
+          <AntDesign
+            name="pluscircleo"
+            size={sizes._24sdp}
             color={colors.black}
           />
-          <Text>Yêu thích</Text>
+          <Text>Thêm bài</Text>
         </Box>
       </TouchableOpacity>
     </Box>

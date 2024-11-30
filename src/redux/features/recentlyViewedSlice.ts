@@ -3,8 +3,8 @@ import useCallAPI from '@app-helper/useCallAPI';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 type RecentlyViewedType = {
-  token: string
   song_id?: number
+  token: string
 }
 
 export const recentlyViewed: any = createAsyncThunk(

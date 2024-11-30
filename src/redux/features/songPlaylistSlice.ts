@@ -25,27 +25,12 @@ export const addSongInPlaylist = createAsyncThunk(
 )
 export const getSongPlaylistData = createAsyncThunk(
   'get/songPlaylistData',
-  async (props?: SongPlaylistParams, { getState }) => {
-    const state: any = getState()
-    console.log('stateeeeeeeeee', state);
-    const { playlist_id, song_id, page, limit } = props || {};
-
-    // Kiểm tra nếu dữ liệu đã tồn tại trong store để tránh việc gọi lại API
-    const paginationData = state.songPlaylist.paginationSongOrPlaylistResponse;
-    console.log('paginationData', paginationData);
-    const alreadyFetched = paginationData.some(item => item.filterPlaylistId === playlist_id && item.filterSongId === song_id && item.page === page && item.limit === limit);
-
-    console.log('alreadyFetcheddddddđ', alreadyFetched);
-    if (alreadyFetched) {
-      return
-    }
-    else {
-      const response = await useCallAPI(
-        'GET',
-        `${URL_API}get-data/relationship/song-playlist?page=${page}&limit=${limit}&playlist_id=${playlist_id}&song_id=${song_id}`
-      );
-      return response;
-    }
+  async (props?: SongPlaylistParams) => {
+    const response = await useCallAPI(
+      'GET',
+      `${URL_API}get-data/relationship/song-playlist?page=${props?.page}&limit=${props?.limit}&playlist_id=${props?.playlist_id}&song_id=${props?.song_id}`
+    );
+    return response;
   }
 );
 const songPlaylistSlice = createSlice({

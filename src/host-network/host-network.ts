@@ -7,4 +7,6 @@ const hostNetwork = '192.168.1.8'
 // const hostNetwork = '192.168.1.28'
 // const hostNetwork = '192.168.1.7'
 // const hostNetwork = '192.168.209.110'
+// const hostNetwork = '192.168.1.13'
+// const hostNetwork = '192.168.2.12'
 export default hostNetwork

@@ -7,6 +7,7 @@ import ServiceStorage, { KEY_STORAGE } from '@app-services/service-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '@redux/features/loginSlice';
 import { getListPlaylistOfUser } from '@redux/features/playlistSlice';
+import { setAccountUser, setToken } from '@redux/features/authSlice';
 
 interface SplashProps { }
 
@@ -37,10 +38,17 @@ const Splash: React.FC<SplashProps> = () => {
 
 
   useEffect(() => {
-    if (loginResponse?.token) {
-      (async() => {
+    if (loginResponse?.token && loginResponse) {
+      (async () => {
         await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, loginResponse?.token)
-        await dispatch(getListPlaylistOfUser({ token: loginResponse?.token }))
+        dispatch(setToken(loginResponse?.token))
+        dispatch(setAccountUser({
+          role: loginResponse?.role,
+          user_name: loginResponse?.user_name,
+          user_avatar: loginResponse?.user_avatar,
+          email: loginResponse?.email,
+          password: loginResponse?.password
+        }))
         await navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -56,7 +64,7 @@ const Splash: React.FC<SplashProps> = () => {
         })
       );
     }
-  }, [loginResponse?.token, error, navigation]);
+  }, [loginResponse, error, navigation]);
 
   return (
     <Box justifyContent={'center'} alignItems={'center'} flex={1} position={'relative'}>

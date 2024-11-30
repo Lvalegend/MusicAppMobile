@@ -14,9 +14,8 @@ import { useNavigationComponentApp } from "@app-helper/navigateToScreens";
 
 interface SliderHorizontalProps {
   title: string
-  data?: any
 }
-const SliderHorizontal: React.FC<SliderHorizontalProps> = ({ title, data }) => {
+const SliderHorizontal: React.FC<SliderHorizontalProps> = ({ title }) => {
   const { goToSongScreen } = useNavigationComponentApp()
   const dispatch = useDispatch()
   const { dataGetListRecentViewedResponse } = useSelector((state: any) => state.recentlyViewed)

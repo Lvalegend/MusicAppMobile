@@ -1,4 +1,4 @@
-import GradientComponent from "@app-components/LinearGradientComponent.tsx/GradientProps";
+import GradientComponent from "@app-components/LinearGradientComponent/GradientProps";
 import { useNavigationComponentApp } from "@app-helper/navigateToScreens";
 import colors from "@assets/colors/global_colors";
 import sizes from "@assets/styles/sizes";

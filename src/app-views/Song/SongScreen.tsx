@@ -1,4 +1,4 @@
-import GradientComponent from "@app-components/LinearGradientComponent.tsx/GradientProps";
+import GradientComponent from "@app-components/LinearGradientComponent/GradientProps";
 import { useNavigationServices } from "@app-helper/navigateToScreens";
 import { Container, Content } from "@app-layout/Layout";
 import ModalOptionSong from "@app-views/Modal/ModalOptionSong/ModalOptionSong";
@@ -23,7 +23,7 @@ const SongScreen: React.FC<SongScreenProps> = () => {
   const { goToBack } = useNavigationServices()
   const route: any = useRoute()
   const { song_id, album_id, album_name, song_name, song_url } = route.params
-  console.log('song_idddddddddddddddd', song_id)
+
   const [isVisibleModalOptionSong, setIsVisibleModalOptionSong] = useState(false)
   const { listOptionTabData, listOptionTabDataCurrent } = useSelector((state: any) => state.songScreen)
   const onCloseModalOptionSong = () => {
@@ -31,11 +31,9 @@ const SongScreen: React.FC<SongScreenProps> = () => {
   }
   const dispatch = useDispatch()
 
-  console.log('listOptionTabData', listOptionTabData)
-  console.log('listOptionTabDataCurrent', listOptionTabDataCurrent)
+
   useEffect(() => {
     if (!listOptionTabData.find(existingItem => existingItem.song_id === song_id)) {
-      console.log('re-renderrrrrrrrrrrrrrrrr')
       dispatch(getSingerSongData({ song_id: song_id }))
       dispatch(getCommentData({ page: 1, limit: 15, filterColumn: 'song_id', filterValue: song_id }))
     }
@@ -48,7 +46,13 @@ const SongScreen: React.FC<SongScreenProps> = () => {
         song => song?.song_id === song_id
       )).flat() : []
 
-  const mergedData = data.reduce((acc, current) => {
+  const {
+    currentListComments
+  } = useSelector((state: any) => state.comment)
+
+  console.log('currentListCommentssss',currentListComments)
+
+  const mergedData = data?.reduce((acc, current) => {
     const existing = acc.find(item => item.song_id === current.song_id);
 
     if (existing) {
@@ -86,9 +90,6 @@ const SongScreen: React.FC<SongScreenProps> = () => {
     return acc;
   }, []);
 
-  console.log('datasssssssssssssss', JSON.stringify(mergedData))
-
-
   useEffect(() => {
     if (mergedData && song_id) {
       const props: Props = {
@@ -100,7 +101,6 @@ const SongScreen: React.FC<SongScreenProps> = () => {
       }
       dispatch(setListOptionTabData(props));
       if (!_.isEqual(listOptionTabDataCurrent[0], props)) {
-        console.log('rrrrrrrrrrrre-render')
         dispatch(setListOptionTabDataCurrent(props));
       }
     }

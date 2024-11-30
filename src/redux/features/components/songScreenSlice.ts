@@ -1,28 +1,52 @@
 import { Props } from '@app-views/Song/components/ListOptionTab';
 import { createSlice } from '@reduxjs/toolkit';
 
+type FavouriteDataProps = {
+  song_id: number,
+  is_favourite: boolean | null
+}
 
-interface ListOptionTabState {
+interface SongScreenState {
   listOptionTabData: Props[];
   listOptionTabDataCurrent: Props[]
+  listCheckFavourite: FavouriteDataProps[]
 }
-const initialState: ListOptionTabState = {
+const initialState: SongScreenState = {
   listOptionTabData: [],
-  listOptionTabDataCurrent: []
+  listOptionTabDataCurrent: [],
+  listCheckFavourite: []
 };
 
 const songScreenSlice = createSlice({
   name: 'songScreen',
   initialState,
   reducers: {
+    setListCheckFavourite: (state, action) => {
+      const data = Array.isArray(action.payload) ? action.payload : [action.payload];
+
+      data?.forEach((item) => {
+        const existingItem = state.listCheckFavourite.find(existingItem => existingItem.song_id === item.song_id);
+
+        if (existingItem) {
+          // Cập nhật trạng thái yêu thích nếu có tồn tại song_id
+          existingItem.is_favourite = item.is_favourite;
+        } else {
+          // Nếu không có song_id trong list, thêm vào
+          state.listCheckFavourite.push(item);
+        }
+      });
+    },
+    setListOptionTabDataCurrent: (state, action) => {
+      const data = Array.isArray(action.payload) ? action.payload : [action.payload];
+      state.listOptionTabDataCurrent = data
+    },
     setListOptionTabData: (state, action) => {
       const data = Array.isArray(action.payload) ? action.payload : [action.payload];
 
       data.forEach((item) => {
-        const existingItem = state.listOptionTabData.find(existingItem => existingItem.song_id === item.song_id);
+        const existingItem = state.listOptionTabData?.find(existingItem => existingItem.song_id === item.song_id);
 
         if (existingItem) {
-          // Cập nhật các trường nếu chúng chưa có
           if (!existingItem.album_id && item.album_id) {
             existingItem.album_id = item.album_id;
           }
@@ -36,23 +60,29 @@ const songScreenSlice = createSlice({
             existingItem.data = item.data;
           }
         } else {
-          // Nếu phần tử chưa có trong mảng, thêm mới
           state.listOptionTabData.push(item);
         }
       });
     },
-    setListOptionTabDataCurrent: (state, action) => {
-      const data = Array.isArray(action.payload) ? action.payload : [action.payload];
-      state.listOptionTabDataCurrent = data
-    },
     clearListOptionTabData: (state) => {
+      state.listOptionTabData = [];
+    },
+    clearListCheckFavourite: (state) => {
       state.listOptionTabData = [];
     },
     clearListOptionTabDataCurrent: (state) => {
       state.listOptionTabDataCurrent = [];
     },
+
   },
 });
 
-export const { setListOptionTabData, clearListOptionTabData,setListOptionTabDataCurrent, clearListOptionTabDataCurrent  } = songScreenSlice.actions;
+export const {
+  setListOptionTabData,
+  clearListOptionTabData,
+  setListOptionTabDataCurrent,
+  clearListOptionTabDataCurrent,
+  setListCheckFavourite,
+  clearListCheckFavourite
+} = songScreenSlice.actions;
 export default songScreenSlice.reducer;

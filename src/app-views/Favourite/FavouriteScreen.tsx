@@ -20,6 +20,8 @@ import { getUserSongData } from "@redux/features/userSongSlice"
 import ServiceStorage, { KEY_STORAGE } from "@app-services/service-storage"
 import { getUserAlbumData } from "@redux/features/userAlbumSlice"
 import ItemCardAlbum from "./components/ItemCardAlbum"
+import { getUserSingerData } from "@redux/features/userSingerSlice"
+import ItemCardSinger from "./components/ItemCardSinger"
 
 interface FavouriteScreenProps { }
 const FavouriteScreen: React.FC<FavouriteScreenProps> = () => {
@@ -31,34 +33,39 @@ const FavouriteScreen: React.FC<FavouriteScreenProps> = () => {
   const closeModalModalFindAndFilter = () => {
     setIsVisibleModalFindAndFilter(false)
   }
-  const [token, setToken] = useState<string>()
-  const { paginationUserSongResponse } = useSelector((state: any) => state.userSong)
-  const { paginationUserAlbumResponse } = useSelector((state: any) => state.userAlbum)
+  const { token } = useSelector((state: any) => state.authToken)
+  const { paginationUserSongResponse, hasFetchingPaginationUserSong } = useSelector((state: any) => state.userSong)
+  const { paginationUserAlbumResponse, hasFetchingPaginationUserAlbum } = useSelector((state: any) => state.userAlbum)
+  const { paginationUserSingerResponse, hasFetchingPaginationUserSinger } = useSelector((state: any) => state.userSinger)
+
+  console.log('hasFetchingPaginationUserAlbummmmmmm', hasFetchingPaginationUserAlbum)
+
+  
+
+  const dispatch = useDispatch()
+  useEffect(() => {
+    if (type === 'song_favourite' && token && !hasFetchingPaginationUserSong) {
+      dispatch(getUserSongData({ page: 1, limit: 10, token: token }))
+      console.log('re-render')
+    }
+    else if (type === 'album_favourite' && token && !hasFetchingPaginationUserAlbum) {
+      dispatch(getUserAlbumData({ page: 1, limit: 10, token: token }))
+      console.log('re-render')
+    }
+    else if (type === 'singer_favourite' && token && !hasFetchingPaginationUserSinger) {
+      dispatch(getUserSingerData({ page: 1, limit: 10, token: token }))
+      console.log('re-render')
+    }
+  }, [type, token, hasFetchingPaginationUserSong, hasFetchingPaginationUserAlbum, hasFetchingPaginationUserSinger])
+
+
   const combinedDataUserSong = paginationUserSongResponse ? paginationUserSongResponse?.flatMap(obj => obj?.data) : []
+  const combinedDataUserSinger = paginationUserSingerResponse ? paginationUserSingerResponse?.flatMap(obj => obj?.data) : []
   const combinedDataUserAlbum = paginationUserAlbumResponse ? paginationUserAlbumResponse?.flatMap(obj => obj?.result) : []
 
   console.log('combinedDataUserSong', combinedDataUserSong)
   console.log('combinedDataUserAlbum', combinedDataUserAlbum)
-
-  useEffect(() => {
-    (async () => {
-      const token = await ServiceStorage.getString(KEY_STORAGE.USER_TOKEN)
-      setToken(token)
-    })()
-  }, [])
-  const dispatch = useDispatch()
-  useEffect(() => {
-    if (type === 'song_favourite' && token) {
-      dispatch(getUserSongData({ page: 1, limit: 10, token: token }))
-      console.log('re-render')
-    }
-    else if (type === 'album_favourite' && token) {
-      dispatch(getUserAlbumData({ page: 1, limit: 10, token: token }))
-      console.log('re-render')
-    }
-  }, [type, token])
-
-
+  console.log('combinedDataUserSinger', combinedDataUserSinger)
 
   return (
     <Container>
@@ -93,20 +100,27 @@ const FavouriteScreen: React.FC<FavouriteScreenProps> = () => {
             }
             {type === 'album_favourite' &&
               <Text color={colors.text_gray}>
-                {combinedDataUserAlbum?.length || '0'} bài hát đã yêu thích
+                {combinedDataUserAlbum?.length || '0'} album đã yêu thích
+              </Text>
+            }
+            {type === 'singer_favourite' &&
+              <Text color={colors.text_gray}>
+                {combinedDataUserSinger?.length || '0'} ca sĩ đã yêu thích
               </Text>
             }
           </Box>
-          <TouchableOpacity
-            style={{
-              backgroundColor: colors.purple,
-              paddingVertical: 10,
-              paddingHorizontal: 30,
-              ...styles_c.col_center,
-              borderRadius: 50
-            }}>
-            <Text style={{ ...styles_c.font_text_16_600 }} color={colors.text_white}>PHÁT NGẪU NHIÊN</Text>
-          </TouchableOpacity>
+          {type === 'song_favourite' &&
+            <TouchableOpacity
+              style={{
+                backgroundColor: colors.purple,
+                paddingVertical: 10,
+                paddingHorizontal: 30,
+                ...styles_c.col_center,
+                borderRadius: 50
+              }}>
+              <Text style={{ ...styles_c.font_text_16_600 }} color={colors.text_white}>PHÁT NGẪU NHIÊN</Text>
+            </TouchableOpacity>
+          }
         </Box>
         <Box>
           <TouchableOpacity
@@ -132,6 +146,14 @@ const FavouriteScreen: React.FC<FavouriteScreenProps> = () => {
                   {combinedDataUserAlbum?.map((item: any, index: number) => (
                     <Box key={index} mb={'15px'}>
                       <ItemCardAlbum item={item} />
+                    </Box>
+                  ))}
+                </Box>}
+              {type === 'singer_favourite' &&
+                <Box>
+                  {combinedDataUserSinger?.map((item: any, index: number) => (
+                    <Box key={index} mb={'15px'}>
+                      <ItemCardSinger item={item} />
                     </Box>
                   ))}
                 </Box>}

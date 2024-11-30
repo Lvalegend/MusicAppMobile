@@ -1,7 +1,7 @@
 import URL_API from '@app-helper/urlAPI';
 import useCallAPI from '@app-helper/useCallAPI';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { ParamsGetDataFromMainTable } from 'src/app-schema/schema';
+import { ParamsGetDataFromMainTable } from 'src/app-schemas/schema';
 
 interface AlbumResponse {
   albumResponse: any[];

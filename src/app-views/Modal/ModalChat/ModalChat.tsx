@@ -11,8 +11,9 @@ import Feather from '@expo/vector-icons/Feather';
 import SocketServices from "@app-services/socket-services";
 import ServiceStorage, { KEY_STORAGE } from "@app-services/service-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { CommentSchema, getCommentData, sendCommentData } from "@redux/features/commentSlice";
+import { addCurrentListComments, addListCurrentPageOfSong, CommentSchema, getCommentData, resetDataCurrentLoadMore, sendCommentData } from "@redux/features/commentSlice";
 import LoadingBase from "@app-components/LoadingBase/LoadingBase";
+import _, { filter } from "lodash";
 
 interface ModalChatProps {
   isVisible: boolean;
@@ -41,13 +42,83 @@ const ModalChat: React.FC<ModalChatProps> = ({ isVisible, onClose }) => {
   const songId = listOptionTabDataCurrent[0]?.song_id
   const [inputText, setInputText] = useState("");
   const [disableButtonSendMessage, setDisableButtonSendMessage] = useState(true);
-  const [responseChatData, setResponseChatData] = useState<ResponeChatData[]>([])
   const [parentCommentId, setParentCommentId] = useState<CommentId>(null)
   const [replyToCommentId, setReplyToCommentId] = useState<CommentId>(null)
   const [userData, setUserData] = useState<any>(null)
   const [token, setToken] = useState<string>()
   const inputRef = useRef<any>(null);
-  const { filterPaginationCommentResponse,hasMoreFilterPaginationCommentResponse, loading } = useSelector((state: any) => state.comment)
+  const {
+    filterPaginationCommentResponse,
+    hasMoreFilterPaginationCommentResponse,
+    loading,
+    currentPageFilterPaginationCommentResponse,
+    currentListComments,
+    currentDataCommentsWithLoadMore,
+    listCurrentPageOfSong
+  } = useSelector((state: any) => state.comment)
+  const [initialDataCurrentListComments, setInitialDataCurrentListComments] = useState<ResponeChatData[]>([])
+  const [responseChatData, setResponseChatData] = useState<ResponeChatData[]>([])
+
+  useEffect(() => {
+      const data = currentListComments?.find((item) => item?.song_id === songId);
+      console.log('currentListCommentsvdfvfbv', data)
+      console.log('filterPaginationCommentResponsemfldmfdlfm', filterPaginationCommentResponse)
+      if (data) {
+        setResponseChatData(data?.dataCurrentListComments);
+        console.log('data?.dataCurrentListComments', JSON.stringify(data?.dataCurrentListComments))
+        setInitialDataCurrentListComments(data?.dataCurrentListComments)
+      } else {
+        const dataResponse = filterPaginationCommentResponse
+          ?.filter((item: any) => item.filterValue == songId && item.filterColumn === 'song_id')
+          .flatMap((item: any) => item?.result?.data || []);
+        console.log('dataResponse', dataResponse)
+        setResponseChatData(dataResponse);
+        setInitialDataCurrentListComments(dataResponse)
+      }
+  }, [songId, filterPaginationCommentResponse]);
+
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const currentPageNow = useRef<number>(1)
+
+  useEffect(() => {
+    const data = listCurrentPageOfSong?.find((item) => item?.song_id === songId && item.type === 'filterPagination');
+    console.log('ddddddddddddddddddata', data)
+    if (data) {
+      setCurrentPage(data?.currentPageOfSong)
+      currentPageNow.current = data?.currentPageOfSong
+      console.log('currentPageOfSong', data?.currentPageOfSong)
+    } else {
+      setCurrentPage(1)
+      currentPageNow.current = 1
+    }
+  }, [songId])
+
+
+  useEffect(() => {
+    if (currentPage > 1 && currentPageNow.current !== currentPage && currentDataCommentsWithLoadMore && currentDataCommentsWithLoadMore?.length > 0) {
+      const data = currentDataCommentsWithLoadMore ? currentDataCommentsWithLoadMore?.flatMap((item: any) => item?.result?.data || []) : []
+      if (data?.length > 0 && data) {
+        setResponseChatData(prev =>
+          [...prev, ...data]
+        )
+      }
+      currentPageNow.current = currentPage
+      dispatch(resetDataCurrentLoadMore())
+    }
+  }, [currentPage, currentDataCommentsWithLoadMore])
+
+
+  useEffect(() => {
+    if (!_.isEqual(initialDataCurrentListComments, responseChatData)) {
+      // Nếu có sự thay đổi, dispatch để cập nhật currentListComments
+      if (!isVisible && responseChatData) {
+        dispatch(addCurrentListComments({ song_id: songId, dataCurrentListComments: responseChatData }));
+        console.log('re-render')
+      }
+    }
+  }, [isVisible, responseChatData, initialDataCurrentListComments, songId]);
+
+
   const dispatch = useDispatch()
   useEffect(() => {
     (async () => {
@@ -68,13 +139,13 @@ const ModalChat: React.FC<ModalChatProps> = ({ isVisible, onClose }) => {
 
   const receiveCommentId = (commentId: CommentId, parentId: CommentId) => {
     if (parentId === null) {
-      setParentCommentId(commentId);  // Gán comment_id của bình luận cha vào parent_comment_id
-      setReplyToCommentId(null);         // Không có reply_comment_id nếu đây là bình luận gốc
+      setParentCommentId(commentId);
+      setReplyToCommentId(null);
     }
     // Nếu đang trả lời bình luận trả lời
     else {
-      setParentCommentId(parentId);   // Gán parent_comment_id là comment_id của bình luận trả lời cha
-      setReplyToCommentId(commentId);   // Gán reply_comment_id là comment_id của bình luận trả lời con
+      setParentCommentId(parentId);
+      setReplyToCommentId(commentId);
     }
   }
 
@@ -171,13 +242,12 @@ const ModalChat: React.FC<ModalChatProps> = ({ isVisible, onClose }) => {
   //   }
   // }, [songId])
 
-  const [currentPage, setCurrentPage] = useState(1);
-
   const handleLoadMore = () => {
     if (hasMoreFilterPaginationCommentResponse && !loading) {
       const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
+      setCurrentPage(nextPage)
       dispatch(getCommentData({ page: nextPage, limit: 15, filterColumn: 'song_id', filterValue: songId }))
+      dispatch(addListCurrentPageOfSong({ song_id: songId, currentPageOfSong: nextPage, type: 'filterPagination' }))
     }
   };
 
@@ -189,15 +259,6 @@ const ModalChat: React.FC<ModalChatProps> = ({ isVisible, onClose }) => {
   };
 
   console.log('filterPaginationCommentResponse', JSON.stringify(filterPaginationCommentResponse))
-
-
-  useEffect(() => {
-    const data = filterPaginationCommentResponse
-      ?.filter((item: any) => item.filterValue == songId && item.filterColumn === 'song_id')
-      .flatMap((item: any) => item?.result?.data || []);
-
-    setResponseChatData(data);
-  }, [filterPaginationCommentResponse, songId]);
 
 
   const handleReplyClick = () => {
@@ -234,62 +295,62 @@ const ModalChat: React.FC<ModalChatProps> = ({ isVisible, onClose }) => {
                   </Box>
                 </Box>
                 <ScrollView style={{ flex: 1 }} onScroll={handleScroll} scrollEventThrottle={16}>
-                    <Fragment>
-                      {responseChatData && responseChatData
-                        .filter(reply => reply.parent_comment_id === null)
-                        .map((item: ResponeChatData, index: number) => {
-                          const processedCommentIds = new Set();
-                          return (
-                            <Box key={index}>
-                              <CommentCard
-                                data={item}
-                                handleReplyMessage={handleReplyClick}
-                                receiveCommentId={receiveCommentId}
-                              />
-                              {responseChatData
-                                .filter(reply => reply.parent_comment_id === item.comment_id)
-                                .map((reply, replyIndex) => {
-                                  if (!processedCommentIds.has(reply.comment_id)) {
-                                    processedCommentIds.add(reply.comment_id);
-                                    return (
-                                      <Box key={`reply-${replyIndex}`}>
-                                        <CommentCard
-                                          data={reply}
-                                          handleReplyMessage={handleReplyClick}
-                                          receiveCommentId={receiveCommentId}
-                                          isReply={true}
-                                          replyToName={responseChatData.find(res => res.comment_id === reply.parent_comment_id)?.user_name || ''}
-                                        />
-                                        {responseChatData
-                                          .filter(subReply => subReply.reply_to_comment_id === reply.comment_id)
-                                          .map((subReply, subReplyIndex) => {
-                                            if (!processedCommentIds.has(subReply.comment_id)) {
-                                              processedCommentIds.add(subReply.comment_id);
-                                              return (
-                                                <CommentCard
-                                                  key={`subReply-${subReplyIndex}`}
-                                                  data={subReply}
-                                                  handleReplyMessage={handleReplyClick}
-                                                  receiveCommentId={receiveCommentId}
-                                                  isReply={true}
-                                                  replyToName={responseChatData.find(res => res.comment_id === subReply.reply_to_comment_id)?.user_name || ''}
-                                                />
-                                              );
-                                            }
-                                            return null;
-                                          })}
-                                      </Box>
-                                    );
-                                  }
-                                  return null;
-                                })}
-                            </Box>
-                          );
-                        })}
-                    </Fragment>
-                    {loading && 
-                      <LoadingBase size="large"/>
-                     }
+                  <Fragment>
+                    {responseChatData && responseChatData
+                      .filter(reply => reply.parent_comment_id === null)
+                      .map((item: ResponeChatData, index: number) => {
+                        const processedCommentIds = new Set();
+                        return (
+                          <Box key={index}>
+                            <CommentCard
+                              data={item}
+                              handleReplyMessage={handleReplyClick}
+                              receiveCommentId={receiveCommentId}
+                            />
+                            {responseChatData
+                              .filter(reply => reply.parent_comment_id === item.comment_id)
+                              .map((reply, replyIndex) => {
+                                if (!processedCommentIds.has(reply.comment_id)) {
+                                  processedCommentIds.add(reply.comment_id);
+                                  return (
+                                    <Box key={`reply-${replyIndex}`}>
+                                      <CommentCard
+                                        data={reply}
+                                        handleReplyMessage={handleReplyClick}
+                                        receiveCommentId={receiveCommentId}
+                                        isReply={true}
+                                        replyToName={responseChatData.find(res => res.comment_id === reply.parent_comment_id)?.user_name || ''}
+                                      />
+                                      {responseChatData
+                                        .filter(subReply => subReply.reply_to_comment_id === reply.comment_id)
+                                        .map((subReply, subReplyIndex) => {
+                                          if (!processedCommentIds.has(subReply.comment_id)) {
+                                            processedCommentIds.add(subReply.comment_id);
+                                            return (
+                                              <CommentCard
+                                                key={`subReply-${subReplyIndex}`}
+                                                data={subReply}
+                                                handleReplyMessage={handleReplyClick}
+                                                receiveCommentId={receiveCommentId}
+                                                isReply={true}
+                                                replyToName={responseChatData.find(res => res.comment_id === subReply.reply_to_comment_id)?.user_name || ''}
+                                              />
+                                            );
+                                          }
+                                          return null;
+                                        })}
+                                    </Box>
+                                  );
+                                }
+                                return null;
+                              })}
+                          </Box>
+                        );
+                      })}
+                  </Fragment>
+                  {loading &&
+                    <LoadingBase size="large" />
+                  }
                 </ScrollView>
                 <Box
                   style={{

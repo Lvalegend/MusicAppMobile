@@ -10,7 +10,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { CommentSchema } from "@redux/features/commentSlice"
 import { Image } from "expo-image"
 import { Box, Text } from "native-base"
-import { TouchableOpacity } from "react-native"
+import { ScrollView, TouchableOpacity } from "react-native"
 import { ResponeChatData } from "../ModalChat"
 
 interface CommentCardProps {
@@ -34,15 +34,21 @@ const CommentCard: React.FC<CommentCardProps> = ({ data, handleReplyMessage, isR
           </Box>
           <Box>
             <Box style={{ ...styles_c.row_direction_align_center, gap: 5 }}>
-              <Text style={{ ...styles_c.font_text_14_600 }}>
-                {data?.user_name}
-              </Text>
-              <Box style={{ backgroundColor: colors.purple, paddingHorizontal: 10, borderRadius: 6 }}>
+              <ScrollView horizontal style={{ maxWidth: sizes._250sdp }}>
+                <Box width={'full'}>
+                  <Text
+                    style={{ ...styles_c.font_text_14_600 }}
+                    >
+                    {data?.user_name}
+                  </Text>
+                </Box>
+              </ScrollView>
+              {/* <Box style={{ backgroundColor: colors.purple, paddingHorizontal: 10, borderRadius: 6 }}>
                 <Text style={{ ...styles_c.font_text_10_600, color: colors.text_white }}>PLUS</Text>
-              </Box>
+              </Box> */}
             </Box>
             {isReply &&
-              <Box style={{ ...styles_c.row_direction_align_center, gap: 5, marginVertical:5 }}>
+              <Box style={{ ...styles_c.row_direction_align_center, gap: 5, marginVertical: 5 }}>
                 <Entypo name="triangle-right" size={sizes._15sdp} color="black" />
                 <Box>
                   <Text style={{ ...styles_c.font_text_14_600 }}>

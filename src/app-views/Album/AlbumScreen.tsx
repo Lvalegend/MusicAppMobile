@@ -29,18 +29,20 @@ const AlbumScreen: React.FC<AlbumScreenProps> = () => {
   const dispatch = useDispatch();
   const { album_id, title, image } = route.params
 
-  const {albumScreenIds} = useSelector((state:any) => state.albumScreenId)
-  
+  const { albumScreenIds } = useSelector((state: any) => state.albumScreenId)
+
   const [checkAlbumId, setCheckAlbumId] = useState(false)
   useEffect(() => {
-    if(!albumScreenIds?.includes(album_id)){
-      dispatch(addAlbumScreenId(album_id))
-      setCheckAlbumId(true)
+    if (album_id) {
+      if (!albumScreenIds?.includes(album_id)) {
+        dispatch(addAlbumScreenId(album_id))
+        setCheckAlbumId(true)
+      }
+      else {
+        setCheckAlbumId(false)
+      }
     }
-    else {
-      setCheckAlbumId(false)
-    }
-  },[album_id])
+  }, [album_id])
 
   useEffect(() => {
     if (checkAlbumId) {
@@ -57,7 +59,6 @@ const AlbumScreen: React.FC<AlbumScreenProps> = () => {
   const quantity = data ? data?.length : 0
   console.log('dataaaaaaa', JSON.stringify(data))
   console.log('album_id', album_id)
-
 
   return (
     <Container>
@@ -81,7 +82,7 @@ const AlbumScreen: React.FC<AlbumScreenProps> = () => {
             />
           </Box>
           <Box marginX={'15px'} mb={4}>
-            <ActionComponent data={data}/>
+            <ActionComponent data={data} album_id={album_id}/>
           </Box>
           <Box padding={'15px'} style={{ gap: 10, borderRadius: 15 }}>
             {data?.map((item: any, index: number) => (

@@ -17,54 +17,58 @@ import { addSongInPlaylist } from "@redux/features/songPlaylistSlice";
 interface PlaylistViewProps {
   type?: 'select' | 'view',
   song_id?: number,
-  closeModal? : any
+  closeModal?: any
 }
 
 export const PlaylistView: React.FC<PlaylistViewProps> = ({ type, song_id, closeModal }) => {
-  const { goToListTitleView, goToViewPlaylist} = useNavigationComponentApp()
+  const { goToListTitleView, goToViewPlaylist } = useNavigationComponentApp()
   const [isVisibleModalAddPlaylist, setIsVisibleModalAddPlaylist] = useState(false)
   const closeModalAddPlaylist = () => {
     setIsVisibleModalAddPlaylist(false)
   }
   const dispatch = useDispatch()
-  const { paginationPlaylistData, allPlaylistData, playlistDataSendResponse, loading, error } = useSelector((state: any) => state.playlist)
-
-  const [token, setToken] = useState<any>(null)
-  const [account, setAccount] = useState<any>()
-  useEffect(() => {
-    (async () => {
-      const token = await ServiceStorage.getString(KEY_STORAGE.USER_TOKEN)
-      const account = await ServiceStorage.getObject(KEY_STORAGE.ACCOUNT_DATA)
-      setToken(token)
-      setAccount(account)
-    })()
-  }, [])
+  const {
+    paginationPlaylistData,
+    loading,
+    error,
+    hasFetchingPaginationPlaylistData,
+    currentPagePaginationPlaylistData,
+    hasMorePaginationPlaylistData
+  } = useSelector((state: any) => state.playlist)
+  const { token, account } = useSelector((state: any) => state.authToken)
 
   // useEffect(() => {
-  //   if (token) {
+  //   if (!hasFetchingPaginationPlaylistData && token) {
+  //     dispatch(getListPlaylistOfUser({ page: 1, limit: 5, token: token }))
+  //   }
+  // }, [token, hasFetchingPaginationPlaylistData])
+
+  // useEffect(() => {
+  //   if (playlistDataSendResponse?.success && token) {
   //     dispatch(getListPlaylistOfUser({ token: token }))
   //   }
-  // }, [token])
+  // }, [playlistDataSendResponse, token])
 
-  useEffect(() => {
-    if (playlistDataSendResponse?.success && token) {
-      dispatch(getListPlaylistOfUser({ token: token }))
-    }
-  }, [playlistDataSendResponse, token])
+  // const handleLoadMore = () => {
+  //    if(hasMorePaginationPlaylistData && !loading){
+  //     const nextPage = currentPagePaginationPlaylistData + 1 
+  //      dispatch(getListPlaylistOfUser({page: nextPage, limit: 5, token: token}))
+  //    }
+  // }
 
-  const combineAllPlaylistData = allPlaylistData ? allPlaylistData?.flatMap(obj => obj?.data) : []
+  const combinePaginationPlaylistData = paginationPlaylistData ? paginationPlaylistData?.flatMap(obj => obj?.data) : []
 
   const renderItem = (item: any) => {
     console.log('items', JSON.stringify(item))
     const checkTypeOnClick = () => {
       if (type === 'view') {
-         goToViewPlaylist({playlist_id: item?.item?.playlist_id, playlist_name: item?.item?.playlist_name})
+        goToViewPlaylist({ playlist_id: item?.item?.playlist_id, playlist_name: item?.item?.playlist_name })
       }
-      else if (type === 'select'){
+      else if (type === 'select') {
         const songIds = []
         if (song_id && item?.item?.playlist_id) {
           songIds.push(song_id)
-          dispatch(addSongInPlaylist({playlist_id: item?.item?.playlist_id, songIds: songIds}))
+          dispatch(addSongInPlaylist({ playlist_id: item?.item?.playlist_id, songIds: songIds }))
           closeModal()
         }
       }
@@ -116,7 +120,7 @@ export const PlaylistView: React.FC<PlaylistViewProps> = ({ type, song_id, close
       </TouchableOpacity>
       <Box>
         <FlatList
-          data={combineAllPlaylistData}
+          data={combinePaginationPlaylistData}
           renderItem={renderItem}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}

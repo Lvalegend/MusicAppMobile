@@ -16,20 +16,21 @@ import { LOGOAPP } from "@app-uikits/image";
 
 interface RankingCardProps {
   item: any
+  index: number
 }
-const RankingCard: React.FC<RankingCardProps> = ({ item }) => {
-  const {goToSongScreen} = useNavigationComponentApp()
+const RankingCard: React.FC<RankingCardProps> = ({ item, index }) => {
+  const { goToSongScreen } = useNavigationComponentApp()
   const [isVisibleModalOptionSong, setIsVisibleModalOptionSong] = useState(false)
   const onCloseModalOptionSong = () => {
     setIsVisibleModalOptionSong(false)
   }
   return (
     <Box>
-      <TouchableWithoutFeedback onPress={() => goToSongScreen()}>
+      <TouchableWithoutFeedback onPress={() => goToSongScreen({ song_id: item?.song_id })}>
         <Box style={{ ...styles_c.row_between }}>
           <Box style={{ ...styles_c.row_direction_align_center, gap: 10 }}>
             <Image
-              source={item.song_image ? { uri: `${URL_API}image/${item.song_image}` } : LOGOAPP}
+              source={item?.song_image ? { uri: `${URL_API}image/${item?.song_image}` } : LOGOAPP}
               style={{
                 width: sizes._55sdp,
                 height: sizes._55sdp,
@@ -38,17 +39,22 @@ const RankingCard: React.FC<RankingCardProps> = ({ item }) => {
               contentFit="cover"
             />
             <Box alignItems={'center'}>
-              <Text color={colors.white}>{1}</Text>
+              <Text color={colors.white}>{index + 1}</Text>
               <Octicons name="dot-fill" size={sizes._12sdp} color={colors.white} />
             </Box>
             <Box>
-              <Text color={'white'}
-                fontSize={sizes._16sdp}
-                fontWeight={'bold'}
-              >
-                {item.song_name}
-              </Text>
-              <Text color={colors.white_gray}>{item.singer_name}</Text>
+              <Box maxWidth={sizes._250sdp}>
+                <Text
+                  color={'white'}
+                  fontSize={sizes._16sdp}
+                  fontWeight={'bold'}
+                  ellipsizeMode="tail"
+                  numberOfLines={2}
+                >
+                  {item?.song_name}
+                </Text>
+              </Box>
+              <Text color={colors.white_gray}>{item?.singer_name}</Text>
             </Box>
           </Box>
           <Box style={{ ...styles_c.row_direction_align_center, gap: 10 }}>

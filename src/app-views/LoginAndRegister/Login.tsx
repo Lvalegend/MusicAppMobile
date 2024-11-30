@@ -12,6 +12,7 @@ import ServiceStorage, { KEY_STORAGE } from "@app-services/service-storage";
 import { useDispatch, useSelector } from "react-redux";
 import AppLoading from "@app-components/AppLoading/AppLoading";
 import { loginUser } from "@redux/features/loginSlice";
+import { setAccountUser, setToken } from "@redux/features/authSlice";
 
 interface LoginProps { }
 
@@ -32,6 +33,14 @@ const Login: React.FC<LoginProps> = () => {
       (async () => {
         console.log('token', loginResponse?.token);
         await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, loginResponse?.token)
+        dispatch(setToken(loginResponse?.token))
+        dispatch(setAccountUser({
+          role: loginResponse?.role,
+          user_name: loginResponse?.user_name,
+          user_avatar: loginResponse?.user_avatar,
+          email: loginResponse?.email,
+          password: loginResponse?.password
+        }))
         await ServiceStorage.setObject
           (
             KEY_STORAGE.ACCOUNT_DATA,

@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "@redux/features/registerSlice";
 import AppLoading from "@app-components/AppLoading/AppLoading";
 import ServiceStorage, { KEY_STORAGE } from "@app-services/service-storage";
+import { setAccountUser, setToken } from "@redux/features/authSlice";
 
 interface RegisterProps { }
 
@@ -31,13 +32,23 @@ const Register: React.FC<RegisterProps> = () => {
       (async () => {
         console.log('token', registerResponse?.token);
         await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, registerResponse?.token)
+        dispatch(setToken(registerResponse?.token))
+        dispatch(setAccountUser({
+          role: registerResponse?.role,
+          user_name: registerResponse?.user_name,
+          user_avatar: registerResponse?.user_avatar,
+          email: registerResponse?.email,
+          password: registerResponse?.password
+        }))
         await ServiceStorage.setObject
           (
             KEY_STORAGE.ACCOUNT_DATA,
             {
               user_name: registerResponse?.user_name,
               user_avatar: registerResponse?.user_avatar,
-              role: registerResponse?.role
+              role: registerResponse?.role,
+              email: registerResponse?.email,
+              password: registerResponse?.password
             }
           )
       })()

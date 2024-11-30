@@ -14,27 +14,44 @@ import { useEffect, useState } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-interface GridViewProps {}
+interface GridViewProps { }
 
 const GridView: React.FC<GridViewProps> = () => {
   const { goToAlbumScreen } = useNavigationComponentApp();
   const route: any = useRoute();
-  const { title } = route.params;
+  const { title, type, singer_id } = route.params;
   const dispatch = useDispatch();
-  const { paginationSingerAlbumResponse, hasMore, loading, error } = useSelector((state: any) => state.singerAlbum);
-  const [currentPage, setCurrentPage] = useState(1);
+  const {
+    paginationSingerAlbumResponse,
+    paginationSingerNoAlbumResponse,
+    hasMorePaginationSingerNoAlbumResponse,
+    currentPagePaginationSingerNoAlbumResponse,
+    hasFetchingPaginationSingerNoAlbumResponse,
+    hasMorePaginationSingerAlbumResponse,
+    currentPagePaginationSingerAlbumResponse,
+    hasFetchingPaginationSingerAlbumResponse,
+    loading,
+    error
+  } = useSelector((state: any) => state.singerAlbum);
 
-  // Flatten the paginated response to get all album data
   const combinedDataSingerAlbum = paginationSingerAlbumResponse
-    ? paginationSingerAlbumResponse.flatMap(obj => obj?.data)
+    ? paginationSingerAlbumResponse?.flatMap(obj => obj?.data)
+    : [];
+  const combinedDataSingerNoAlbum = paginationSingerNoAlbumResponse
+    ? paginationSingerNoAlbumResponse?.filter((item: any) => item?.filterSingerId === singer_id)?.flatMap(obj => obj?.data)
     : [];
 
-  // Load more data when user reaches the end of the list
   const handleLoadMore = () => {
-    if (hasMore && !loading) {
-      const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
-      dispatch(getSingerAlbumData({ page: nextPage, limit: 6 }));
+    if (type === 'random_album') {
+      if (hasMorePaginationSingerAlbumResponse && !loading) {
+        const nextPage = currentPagePaginationSingerAlbumResponse + 1;
+        dispatch(getSingerAlbumData({ page: nextPage, limit: 8 }));
+      }
+    } else if (type === 'album_of_singer' && singer_id) {
+      if (hasMorePaginationSingerNoAlbumResponse && !loading) {
+        const nextPage = currentPagePaginationSingerNoAlbumResponse + 1;
+        dispatch(getSingerAlbumData({ singer_id: singer_id, page: nextPage, limit: 8 }));
+      }
     }
   };
 
@@ -71,9 +88,9 @@ const GridView: React.FC<GridViewProps> = () => {
       <HeaderCustom title={title} />
       <Box flex={1} height={sizes._screen_height}>
         <FlatList
-          data={combinedDataSingerAlbum}
+          data={type === 'album_of_singer' ? combinedDataSingerNoAlbum : combinedDataSingerAlbum}
           renderItem={renderItem}
-          keyExtractor={(item, index) => (item?.id ? item.id.toString() : index.toString())}
+          keyExtractor={(item, index) => (item?.id ? item?.id?.toString() : index?.toString())}
           numColumns={2}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
@@ -81,7 +98,6 @@ const GridView: React.FC<GridViewProps> = () => {
           ListEmptyComponent={error ? <Text style={{ color: 'red' }}>Error: {error}</Text> : null}
           ListFooterComponentStyle={{ paddingVertical: 20 }}
         />
-        {!hasMore && null}
       </Box>
     </Container>
   );

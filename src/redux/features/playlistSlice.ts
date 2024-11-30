@@ -13,7 +13,7 @@ export const createPlaylist: any = createAsyncThunk(
   'post/createPlaylist',
   async (props: PlaylistProps) => {
     console.log(props.playlist_name)
-    const response = await useCallAPI('POST', `${URL_API}create/playlist`, true, props?.token, {playlist_name: props?.playlist_name})
+    const response = await useCallAPI('POST', `${URL_API}create/playlist`, true, props?.token, { playlist_name: props?.playlist_name })
     return response;
   }
 );
@@ -23,7 +23,7 @@ export const getListPlaylistOfUser: any = createAsyncThunk(
   async (props: PlaylistProps) => {
     const response = await useCallAPI('GET', `${URL_API}get/user-playlist-data?page=${props?.page}&limit=${props?.limit}`, false, props?.token)
     return response;
-  } 
+  }
 )
 
 const playlistSlice = createSlice({
@@ -31,7 +31,10 @@ const playlistSlice = createSlice({
   initialState: {
     paginationPlaylistData: [],
     allPlaylistData: [],
-    playlistDataSendResponse: {},
+    playlistDataSendResponse: null,
+    hasFetchingPaginationPlaylistData: false,
+    currentPagePaginationPlaylistData: 1,
+    hasMorePaginationPlaylistData: false,
     loading: false,
     error: null,
   },
@@ -61,9 +64,16 @@ const playlistSlice = createSlice({
         const { limit, page } = action.meta.arg || {};
         const payloadArray = Array.isArray(action.payload) ? action.payload : [action.payload];
         if (page && limit) {
-          state.paginationPlaylistData = state.paginationPlaylistData ? [...state.paginationPlaylistData, ...payloadArray] : payloadArray;;
+          if (payloadArray[0]?.data?.length < limit) {
+            state.hasMorePaginationPlaylistData = false;
+          } else {
+            state.hasMorePaginationPlaylistData = true;
+          }
+          state.paginationPlaylistData = state.paginationPlaylistData ? [...state.paginationPlaylistData, ...payloadArray] : payloadArray;
+          state.hasFetchingPaginationPlaylistData = !!payloadArray[0]?.data;
+          state.currentPagePaginationPlaylistData = page;
         } else {
-          state.allPlaylistData = payloadArray;;
+          state.allPlaylistData = payloadArray;
         }
       })
       .addCase(getListPlaylistOfUser.rejected, (state, action) => {
