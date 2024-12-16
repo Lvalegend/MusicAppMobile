@@ -1,11 +1,40 @@
 {
   "expo": {
-    "name": "MyGraduationProject",
+    "name": "Lvalegend Music",
     "slug": "MyGraduationProject",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/images/icon.png",
+    "icon": "./src/assets/images/logoLvalegend.png",
     "userInterfaceStyle": "light",
+    "jsEngine": "jsc",
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends.",
+          "cameraPermission": "The app needs access to your camera to take photos."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./src/assets/images/splash.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "sounds": [
+            "./src/assets/musicsMột điều mà anh ngại nói ra/Mot-Dieu-Ma-Anh-Rat-Ngai-Noi-Ra-Hai-Sam.mp3",
+            ".src/assets/musics/Suýt nữa thì/Suyt-Nua-Thi-Chuyen-Di-Cua-Thanh-Xuan-OST-Andiez.mp3"
+          ]
+        }
+      ],
+      [
+        "@react-native-voice/voice",
+        {
+          "microphonePermission": "This app needs access to the microphone",
+          "speechRecognitionPermission": "This app needs to securely recognize user speech"
+        }
+      ]
+    ],
     "splash": {
       "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
@@ -13,13 +42,30 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lvalegend.MyGraduationProject"
+      "bundleIdentifier": "com.lvalegend.MyGraduationProject",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"],
+        "UIUserNotificationSettings": {
+          "types": ["alert", "badge", "sound"]
+        },
+        "NSPhotoLibraryUsageDescription": "This app requires access to your photo library.",
+        "NSPhotoLibraryAddUsageDescription": "This app requires permission to save files to your photo library.",
+        "NSMicrophoneUsageDescription": "This app requires to access your microphone.",
+        "NSSpeechRecognitionUsageDescription": "This app requires to securely recognize your speech."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "NOTIFICATIONS",
+        "RECORD_AUDIO",
+        "FOREGROUND_SERVICE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE" 
+      ],
       "package": "com.lvalegend.MyGraduationProject"
     },
     "web": {
@@ -29,6 +75,9 @@
       "eas": {
         "projectId": "110a732c-298a-4a8e-a5f4-abd1e2fee56c"
       }
+    },
+    "devClient": {
+      "install": true
     }
   }
 }

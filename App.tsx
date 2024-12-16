@@ -7,6 +7,10 @@ import Toast from 'react-native-toast-message';
 import { toastConfig } from '@app-components/CustomToast/ToatConfig';
 import { SafeAreaView } from 'react-native';
 import { APIProvider } from 'src/app-context/ContextProvider';
+import './ReactotronConfig';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['new NativeEventEmitter']);
+LogBox.ignoreAllLogs(); 
 
 export default function App() {
   return (

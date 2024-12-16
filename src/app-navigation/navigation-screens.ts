@@ -1,3 +1,4 @@
+
 export const ListStackScreens: Record<string, any> = {
   MainHome: {
     name: 'MainHome',
@@ -47,6 +48,56 @@ export const ListStackScreens: Record<string, any> = {
   SongScreen: {
     name: 'SongScreen',
     component: require('@app-views/Song/SongScreen')
+      .default,
+  },
+  AlbumScreen: {
+    name: 'AlbumScreen',
+    component: require('@app-views/Album/AlbumScreen')
+      .default,
+  },
+  ViewAll: {
+    name: 'ViewAll',
+    component: require('@app-views/ViewAll/ViewAll')
+      .default,
+  },
+  ViewAccountPackage: {
+    name: 'ViewAccountPackage',
+    component: require('@app-views/ViewAll/ViewAccountPackage')
+      .default,
+  },
+  ViewPlaylist: {
+    name: 'ViewPlaylist',
+    component: require('@app-views/ViewAll/ViewPlaylist')
+      .default,
+  },
+  GridView: {
+    name: 'GridView',
+    component: require('@app-views/ViewAll/GridView')
+      .default,
+  },
+  ListTitleView: {
+    name: 'ListTitleView',
+    component: require('@app-views/ViewAll/ListTitleView')
+      .default,
+  },
+  EditProfile: {
+    name: 'EditProfile',
+    component: require('@app-views/Personal/EditProfile')
+      .default,
+  },
+  FavouriteScreen: {
+    name: 'FavouriteScreen',
+    component: require('@app-views/Favourite/FavouriteScreen')
+      .default,
+  },
+  SingerScreen: {
+    name: 'SingerScreen',
+    component: require('@app-views/Singer/SingerScreen')
+      .default,
+  },
+  SpeechToText: {
+    name: 'SpeechToText',
+    component: require('@app-views/Voice/SpeechToText')
       .default,
   },
 }

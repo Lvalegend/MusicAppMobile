@@ -1,4 +1,4 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
@@ -16,10 +16,11 @@ module.exports = function(api) {
             '@app-services': './src/app-services',
             '@app-hooks': './src/app-hooks',
             '@app-layout': './src/app-layout',
-            '@redux': './src/redux',   
+            '@redux': './src/redux',
           },
         },
       ],
+      'react-native-reanimated/plugin'
     ],
   };
 };

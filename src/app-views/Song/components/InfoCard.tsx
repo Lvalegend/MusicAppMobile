@@ -5,9 +5,18 @@ import { Box, Text } from "native-base"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import styles_c from "@assets/styles/styles_c";
+import URL_API from "@app-helper/urlAPI";
+import { useSelector } from "react-redux";
 
-interface InfoCardProps { }
+interface InfoCardProps {
+ }
 const InfoCard: React.FC<InfoCardProps> = () => {
+  const { listOptionTabDataCurrent } = useSelector((state: any) => state.songScreen)
+  const allSingerNames = listOptionTabDataCurrent[0]?.data ?
+    listOptionTabDataCurrent[0]?.data
+      .flatMap(song => song?.singers.map(singer => singer?.singer_name))
+      .join(", ") : ''
+
   return (
     <Box bgColor={colors.white} p={'10px'} borderRadius={'8px'} w={'full'}>
       <Box
@@ -19,16 +28,16 @@ const InfoCard: React.FC<InfoCardProps> = () => {
         }}>
         <Box>
           <Image
-            source={require('@assets/images/Chúa_tể_an.png')}
+            source={listOptionTabDataCurrent[0]?.data[0]?.song_image ? {uri: `${URL_API}image/${listOptionTabDataCurrent[0]?.data[0]?.song_image}`} : require('@assets/images/Chúa_tể_an.png')}
             style={{ width: sizes._65sdp, height: sizes._65sdp, borderRadius: 8 }}
           />
         </Box>
         <Box>
-          <Text fontWeight={'700'}>Lâu Đài Tình Ái</Text>
+          <Text fontWeight={'700'}>{listOptionTabDataCurrent[0]?.data[0]?.song_name}</Text>
           <Text
             color={colors.gray_primary}
           >
-            Cẩm Ly, Quốc Đại
+            {allSingerNames}
           </Text>
           <Box
             style={{ ...styles_c.row_direction_align_center, gap: 10 }}
@@ -41,7 +50,7 @@ const InfoCard: React.FC<InfoCardProps> = () => {
                 size={sizes._15sdp}
                 color={colors.gray_primary}
               />
-              <Text color={colors.gray_primary}>940,0K</Text>
+              <Text color={colors.gray_primary}>{listOptionTabDataCurrent[0]?.data[0]?.total_favourite || 0}</Text>
             </Box>
             <Box
               style={{
@@ -53,7 +62,7 @@ const InfoCard: React.FC<InfoCardProps> = () => {
                 size={sizes._15sdp}
                 color={colors.gray_primary}
               />
-              <Text color={colors.gray_primary}>31M</Text>
+              <Text color={colors.gray_primary}>{listOptionTabDataCurrent[0]?.data[0]?.total_view || 0}</Text>
             </Box>
           </Box>
         </Box>
@@ -64,7 +73,7 @@ const InfoCard: React.FC<InfoCardProps> = () => {
             <Text color={colors.gray_primary}>Album</Text>
           </Box>
           <Box w={'75%'}>
-            <Text>Lâu Đài Tình Ái</Text>
+            <Text>{listOptionTabDataCurrent[0]?.album_name}</Text>
           </Box>
         </Box>
         <Box style={{ ...styles_c.row_direction_align_center, gap: 10 }}>

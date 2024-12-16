@@ -16,7 +16,7 @@ const TabBarOption: React.FC<TabBarOptionProps> = () => {
   const Optionals = () => {
     switch (option) {
       case 'Playlist':
-        return <PlaylistView />
+        return <PlaylistView type={'view'} />
       case 'Album':
         return <AlbumListView />
       case 'Singer':

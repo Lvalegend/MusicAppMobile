@@ -4,6 +4,8 @@ import { Box, Text } from "native-base"
 import { View, TouchableOpacity, ScrollView } from "react-native"
 import { Image } from 'expo-image';
 import styles_c from "@assets/styles/styles_c";
+import { LOGOAPP } from "@app-uikits/image";
+import { useNavigationComponentApp } from "@app-helper/navigateToScreens";
 
 interface SliderHorizontalProps {
   title: string
@@ -11,6 +13,7 @@ interface SliderHorizontalProps {
 
 }
 const SliderHorizontal: React.FC<SliderHorizontalProps> = ({ title, data }) => {
+  const {goToViewPlaylist} = useNavigationComponentApp()
   return (
     <Box w={'full'}>
       <Box style={{ ...styles_c.row_between }}>
@@ -46,9 +49,13 @@ const SliderHorizontal: React.FC<SliderHorizontalProps> = ({ title, data }) => {
         showsHorizontalScrollIndicator={false}
       >
         {data?.map((item: any, index: any) => (
-          <Box key={index} style={{ gap: 5 }}>
+          <TouchableOpacity 
+          key={index} 
+          onPress={() => goToViewPlaylist({playlist_id: item?.playlist_id, playlist_name: item?.playlist_name})}
+          >
+          <Box style={{ gap: 5 }}>
             <Image
-              source={item.image}
+              source={LOGOAPP}
               style={{
                 width: sizes._160sdp,
                 height: sizes._160sdp,
@@ -57,7 +64,7 @@ const SliderHorizontal: React.FC<SliderHorizontalProps> = ({ title, data }) => {
               contentFit="cover"
               transition={1000}
             />
-            <Box w={sizes._160sdp} marginTop={'5px'}>
+            <Box maxWidth={sizes._160sdp} marginTop={'5px'} style={{...styles_c.col_center}}>
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
@@ -65,11 +72,11 @@ const SliderHorizontal: React.FC<SliderHorizontalProps> = ({ title, data }) => {
                 fontWeight={'500'}
                 color={colors.black}
               >
-                {item?.namePlaylist || item?.nameSong}
+                {item?.playlist_name}
               </Text>
             </Box>
             {item?.singer &&
-              <Box w={sizes._160sdp}>
+              <Box maxWidth={sizes._160sdp}>
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -82,6 +89,7 @@ const SliderHorizontal: React.FC<SliderHorizontalProps> = ({ title, data }) => {
               </Box>
             }
           </Box>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </Box>

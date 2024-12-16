@@ -2,20 +2,66 @@ import ButtonBase from "@app-components/ButtonBase/ButtonBase";
 import sizes from "@assets/styles/sizes";
 import styles_c from "@assets/styles/styles_c";
 import { Box, Text, Checkbox } from "native-base";
-import { memo, useState } from "react";
+import { Fragment, memo, useEffect, useState } from "react";
 import { View, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
 import { Formik } from "formik";
 import { Image } from 'expo-image';
 import { registerSchema } from "./schema/validationForm";
 import { useNavigationMainApp } from "@app-helper/navigateToScreens";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "@redux/features/registerSlice";
+import AppLoading from "@app-components/AppLoading/AppLoading";
+import ServiceStorage, { KEY_STORAGE } from "@app-services/service-storage";
+import { setAccountUser, setToken } from "@redux/features/authSlice";
 
 interface RegisterProps { }
 
 const Register: React.FC<RegisterProps> = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { goToLogin } = useNavigationMainApp()
+  const {goToLogin} = useNavigationMainApp()
+  const dispatch = useDispatch();
+  const { loading, error, registerResponse } = useSelector((state: any) => state.register);
+  
+  const [formData, setFormData] = useState({
+    user_name: '',
+    email: '',
+    password: '',
+  });
+
+  useEffect(() => {
+    if (registerResponse && registerResponse?.success === true) {
+      (async () => {
+        console.log('token', registerResponse?.token);
+        await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, registerResponse?.token)
+        dispatch(setToken(registerResponse?.token))
+        dispatch(setAccountUser({
+          role: registerResponse?.role,
+          user_name: registerResponse?.user_name,
+          user_avatar: registerResponse?.user_avatar,
+          email: registerResponse?.email,
+          password: registerResponse?.password
+        }))
+        await ServiceStorage.setObject
+          (
+            KEY_STORAGE.ACCOUNT_DATA,
+            {
+              user_name: registerResponse?.user_name,
+              user_avatar: registerResponse?.user_avatar,
+              role: registerResponse?.role,
+              email: registerResponse?.email,
+              password: registerResponse?.password
+            }
+          )
+      })()
+    }
+  }, [registerResponse])
+
+  const handleTextChange = (name: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitForm = () => {
+    dispatch(registerUser(formData)); // Gửi yêu cầu đăng ký
+  };
 
   return (
     <KeyboardAvoidingView
@@ -26,13 +72,13 @@ const Register: React.FC<RegisterProps> = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Formik
           initialValues={{
-            name: name,
-            email: email,
-            password: password
+            name: '',
+            email: '',
+            password: '',
           }}
           validationSchema={registerSchema}
           onSubmit={(values) => {
-            // Xử lý submit ở đây
+
           }}
         >
           {({
@@ -53,7 +99,7 @@ const Register: React.FC<RegisterProps> = () => {
               />
               <Box>
                 <Text fontSize={sizes._12sdp} color={'#25123E'}>
-                  Welcome to Lvalegnd Music
+                  Welcome to Lvalegend Music
                 </Text>
               </Box>
               <Box>
@@ -67,8 +113,8 @@ const Register: React.FC<RegisterProps> = () => {
                   <TextInput
                     style={[styles.text_input_style, { borderColor: errors.name ? 'red' : undefined, borderWidth: errors.name ? 1 : 0 }]}
                     placeholder="Enter Name"
-                    value={name}
-                    onChangeText={(text) => { setName(text); setFieldValue('name', text); }}
+                    value={formData.user_name}
+                    onChangeText={(text) => { handleTextChange('user_name', text); setFieldValue('name', text); }}
                     onBlur={() => handleBlur('name')}
                   />
                   {errors.name && (
@@ -84,8 +130,8 @@ const Register: React.FC<RegisterProps> = () => {
                   <TextInput
                     style={[styles.text_input_style, { borderColor: errors.email ? 'red' : undefined, borderWidth: errors.email ? 1 : 0 }]}
                     placeholder="Enter Email"
-                    value={email}
-                    onChangeText={(text) => { setEmail(text); setFieldValue('email', text); }}
+                    value={formData.email}
+                    onChangeText={(text) => { handleTextChange('email', text); setFieldValue('email', text); }}
                     onBlur={() => handleBlur('email')}
                   />
                   {errors.email && (
@@ -101,9 +147,9 @@ const Register: React.FC<RegisterProps> = () => {
                   <TextInput
                     style={[styles.text_input_style, { borderColor: errors.password ? 'red' : undefined, borderWidth: errors.password ? 1 : 0 }]}
                     placeholder="Enter Password"
-                    value={password}
+                    value={formData.password}
                     secureTextEntry
-                    onChangeText={(text) => { setPassword(text); setFieldValue('password', text); }}
+                    onChangeText={(text) => { handleTextChange('password', text); setFieldValue('password', text); }}
                     onBlur={() => handleBlur('password')}
                   />
                   {errors.password && (
@@ -118,14 +164,14 @@ const Register: React.FC<RegisterProps> = () => {
                   <Box>
                     <ButtonBase
                       title="Sign Up"
-                      onPress={handleSubmit}
+                      onPress={handleSubmitForm}
                     />
                   </Box>
                   <Box style={{ ...styles_c.row_center, gap: 5 }}>
                     <Text fontSize={sizes._13sdp}>
                       Do you have an account?
                     </Text>
-                    <TouchableOpacity onPress={goToLogin}>
+                    <TouchableOpacity onPress={() => goToLogin()}>
                       <Text fontSize={sizes._13sdp} color={'#1890FF'} fontWeight={'bold'}>
                         Sign In
                       </Text>
@@ -137,6 +183,9 @@ const Register: React.FC<RegisterProps> = () => {
           )}
         </Formik>
       </ScrollView>
+      <Fragment>
+         {loading && <AppLoading loading={loading}/>}
+      </Fragment>
     </KeyboardAvoidingView>
   );
 };

@@ -1,10 +1,16 @@
+import URL_API from "@app-helper/urlAPI";
+import { LOGOAPP } from "@app-uikits/image";
 import responsive_screen from "@assets/styles/responsive";
 import sizes from "@assets/styles/sizes";
-import React, { useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { Animated, View, Image, StyleSheet, Platform } from 'react-native';
+import { useSelector } from "react-redux";
 
-interface CircleImageRotatingProps { }
+interface CircleImageRotatingProps {
+  
+ }
 const CircleImageRotating: React.FC<CircleImageRotatingProps> = () => {
+  const {listOptionTabDataCurrent}= useSelector((state:any) => state.songScreen)
   const spinValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -27,7 +33,7 @@ const CircleImageRotating: React.FC<CircleImageRotatingProps> = () => {
   return (
     <View>
       <Animated.Image
-        source={require('@assets/images/Chúa_tể_an.png')}
+        source={listOptionTabDataCurrent[0]?.data[0]?.song_image ? {uri: `${URL_API}image/${listOptionTabDataCurrent[0]?.data[0]?.song_image}`} : LOGOAPP}
         style={[styles.image, { transform: [{ rotate: spin }] }]}
       />
     </View>
@@ -41,4 +47,4 @@ const styles = StyleSheet.create({
     resizeMode: 'cover'
   },
 });
-export default CircleImageRotating
+export default memo(CircleImageRotating)

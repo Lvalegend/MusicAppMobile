@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, Box } from "native-base";
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import { View, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { Image } from 'expo-image';
 import sizes from "@assets/styles/sizes";
 import ColorChangingText from "@app-components/ColorChangeText/ColorChangeText";
+import { useNavigationComponentApp } from '@app-helper/navigateToScreens';
+import colors from '@assets/colors/global_colors';
+import URL_API from '@app-helper/urlAPI';
+import { LOGOAPP } from '@app-uikits/image';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAlbumData } from '@redux/features/albumSlice';
+import { useNavigation } from '@react-navigation/native';
 
 interface SliderOneRowBigProps {
   title?: string;
@@ -11,11 +18,13 @@ interface SliderOneRowBigProps {
 }
 
 const SliderOneRowBig: React.FC<SliderOneRowBigProps> = ({ title, data }) => {
+  const { goToAlbumScreen } = useNavigationComponentApp()
+
   return (
     <Box>
       {title && (
         <Box marginBottom={'10px'}>
-          <Text fontSize={sizes._26sdp} color={'black'} fontWeight={'bold'}>
+          <Text fontSize={sizes._26sdp} color={colors.black} fontWeight={'bold'}>
             {title}
           </Text>
         </Box>
@@ -25,15 +34,26 @@ const SliderOneRowBig: React.FC<SliderOneRowBigProps> = ({ title, data }) => {
         contentContainerStyle={{ gap: 15 }}
         showsHorizontalScrollIndicator={false}
       >
-        {data.map((value: any, index: number) => (
-          <TouchableOpacity key={index}>
+        {data?.map((value: any, index: number) => (
+          <TouchableWithoutFeedback key={index}
+            onPress={() =>
+              goToAlbumScreen({
+                album_id: value?.album_id,
+                title: value?.album_name,
+                image: value?.album_image
+              })}>
             <Box
-              style={{ width: sizes._270sdp, height: sizes._330sdp, borderRadius: 5, overflow: 'hidden' }}
+              style={{
+                width: sizes._270sdp,
+                height: sizes._330sdp,
+                borderRadius: 5,
+                overflow: 'hidden'
+              }}
             >
               <Image
-                source={value.image}
+                source={value?.album_image ? { uri: `${URL_API}image/${value?.album_image}` } : LOGOAPP}
                 style={{ flex: 1 }}
-                contentFit="cover"
+                contentFit="fill"
               />
               <Box
                 justifyContent={'space-between'}
@@ -48,21 +68,21 @@ const SliderOneRowBig: React.FC<SliderOneRowBigProps> = ({ title, data }) => {
               >
                 <Box>
                   <ColorChangingText
-                    text={value.status}
-                    colors={['#A9A9A9', 'white']}
+                    text={value?.description}
+                    colors={[colors.white_gray, colors.white]}
                   />
                 </Box>
                 <Box>
-                  <Text color={'white'} fontSize={sizes._25sdp}>
-                    {value.title}
+                  <Text color={colors.white} fontSize={sizes._25sdp}>
+                    {value?.album_name}
                   </Text>
-                  <Text color={'#A9A9A9'}>
-                    {value.else}
+                  <Text color={colors.white_gray}>
+                    {value?.more_description}
                   </Text>
                 </Box>
               </Box>
             </Box>
-          </TouchableOpacity>
+          </TouchableWithoutFeedback>
         ))}
       </ScrollView>
     </Box>

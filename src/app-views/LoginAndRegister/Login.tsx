@@ -2,20 +2,71 @@ import ButtonBase from "@app-components/ButtonBase/ButtonBase";
 import sizes from "@assets/styles/sizes";
 import styles_c from "@assets/styles/styles_c";
 import { Box, Text, Checkbox } from "native-base";
-import { memo, useState } from "react";
+import { Fragment, memo, useEffect, useState } from "react";
 import { View, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
 import { Formik } from "formik";
 import { Image } from 'expo-image';
 import { loginSchema } from "./schema/validationForm";
-import { useNavigationMainApp } from "@app-helper/navigateToScreens";
+import { useNavigationMainApp, useNavigationServices } from "@app-helper/navigateToScreens";
+import ServiceStorage, { KEY_STORAGE } from "@app-services/service-storage";
+import { useDispatch, useSelector } from "react-redux";
+import AppLoading from "@app-components/AppLoading/AppLoading";
+import { loginUser } from "@redux/features/loginSlice";
+import { setAccountUser, setToken } from "@redux/features/authSlice";
 
 interface LoginProps { }
 
 const Login: React.FC<LoginProps> = () => {
   const [isChecked, setChecked] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const { goToRegister, goToBottomContainer } = useNavigationMainApp()
+  const {replaceScreen} = useNavigationServices()
+  const dispatch = useDispatch();
+  const { loading, error, loginResponse } = useSelector((state: any) => state.login);
+  
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  useEffect(() => {
+    if (loginResponse && loginResponse?.success === true) {
+      (async () => {
+        console.log('token', loginResponse?.token);
+        await ServiceStorage.setString(KEY_STORAGE.USER_TOKEN, loginResponse?.token)
+        dispatch(setToken(loginResponse?.token))
+        dispatch(setAccountUser({
+          role: loginResponse?.role,
+          user_name: loginResponse?.user_name,
+          user_avatar: loginResponse?.user_avatar,
+          email: loginResponse?.email,
+          password: loginResponse?.password
+        }))
+        await ServiceStorage.setObject
+          (
+            KEY_STORAGE.ACCOUNT_DATA,
+            {
+              user_name: loginResponse?.user_name,
+              user_avatar: loginResponse?.user_avatar,
+              role: loginResponse?.role,
+              email: loginResponse?.email,
+              password: loginResponse?.password
+            }
+          )
+          // await goToBottomContainer({screenName: 'Thư viện'})
+          await replaceScreen('BottomContainer')
+      })()
+    }
+  }, [loginResponse])
+
+
+
+  const handleTextChange = (name: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitForm = () => {
+    dispatch(loginUser(formData)); // Gửi yêu cầu đăng nhập
+  };
 
 
   return (
@@ -27,8 +78,8 @@ const Login: React.FC<LoginProps> = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Formik
           initialValues={{
-            email: email,
-            password: password
+            email: '',
+            password: '',
           }}
           validationSchema={loginSchema}
           onSubmit={(values) => {
@@ -67,8 +118,8 @@ const Login: React.FC<LoginProps> = () => {
                   <TextInput
                     style={[styles.text_input_style, { borderColor: errors.email ? 'red' : undefined, borderWidth: errors.email ? 1 : 0 }]}
                     placeholder="Enter Email"
-                    value={email}
-                    onChangeText={(text) => { setEmail(text); setFieldValue('email', text); }}
+                    value={formData.email}
+                    onChangeText={(text) => { handleTextChange('email', text); setFieldValue('email', text); }}
                     onBlur={() => handleBlur('email')}
                   />
                   {errors.email ? (
@@ -84,9 +135,9 @@ const Login: React.FC<LoginProps> = () => {
                   <TextInput
                     style={[styles.text_input_style, { borderColor: errors.password ? 'red' : undefined, borderWidth: errors.password ? 1 : 0 }]}
                     placeholder="Enter Password"
-                    value={password}
+                    value={formData.password}
                     secureTextEntry
-                    onChangeText={(text) => { setPassword(text); setFieldValue('password', text); }}
+                    onChangeText={(text) => { handleTextChange('password', text); setFieldValue('password', text); }}
                     onBlur={() => handleBlur('password')}
                   />
                   {errors.password && (
@@ -114,7 +165,7 @@ const Login: React.FC<LoginProps> = () => {
                       </Text>
                     </TouchableWithoutFeedback>
                   </Box>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => {}}>
                     <Text fontSize={sizes._11sdp} color={'#1890FF'} fontWeight={'500'}>
                       Forgot your password?
                     </Text>
@@ -123,14 +174,14 @@ const Login: React.FC<LoginProps> = () => {
                 <Box>
                   <ButtonBase
                     title="Sign In"
-                    onPress={goToBottomContainer}
+                    onPress={handleSubmitForm}
                   />
                 </Box>
                 <Box style={{ ...styles_c.row_center, gap: 5 }}>
                   <Text fontSize={sizes._13sdp}>
                     You don't have an account?
                   </Text>
-                  <TouchableOpacity onPress={goToRegister}>
+                  <TouchableOpacity onPress={() => goToRegister()}>
                     <Text fontSize={sizes._13sdp} color={'#1890FF'} fontWeight={'bold'}>
                       Sign Up
                     </Text>
@@ -141,6 +192,9 @@ const Login: React.FC<LoginProps> = () => {
           )}
         </Formik>
       </ScrollView>
+      <Fragment>
+        {loading && <AppLoading loading={loading} />}
+      </Fragment>
     </KeyboardAvoidingView>
   );
 };

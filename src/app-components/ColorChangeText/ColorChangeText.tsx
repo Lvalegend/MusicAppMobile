@@ -35,7 +35,7 @@ const ColorChangingText: React.FC<ColorChangingTextProps> = ({
 
   return (
     <View style={styles.container}>
-      {text.split('').map((char, index) => {
+      {text?.split('')?.map((char, index) => {
         const color = colorAnimation.interpolate({
           inputRange: [
             (index - 1) / text.length,

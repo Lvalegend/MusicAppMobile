@@ -27,13 +27,13 @@ const useCallAPI = async (
         data,
         ...config
       });
-      if (response.data) {
-        console.log('respone: ', response.data)
+      if (response?.data) {
+        console.log('respone: ', response?.data)
         showToastApp({
           type: 'success',
           title: 'Thành công!',
         });
-        return response.data
+        return response?.data
       }
       else {
         showToastApp({
@@ -77,9 +77,9 @@ const useCallAPI = async (
         data,
         ...config
       });
-      if (response.data) {
-        console.log('respone: ', response.data)
-        return response.data
+      if (response?.data) {
+        console.log('respone: ', response?.data)
+        return response?.data
       }
       else {
         console.log('no respone')
